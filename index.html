@@ -4,14 +4,16 @@
   <meta charset="UTF-8" />
   <title>Jay & Michelle Wedding Photos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #121212;        
-      --card-bg: #1e1e1e;        
-      --champagne-gold: #F7E7CE;  /* 香檳金 */
-      --soft-gold: #D4AF37;       /* 點綴金 */
-      --text-main: #f0f0f0;      
+      /* 重新配製：溫柔感配色 */
+      --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); /* 珍珠白 */
+      --main-pink: #f5e3e0;      /* 溫柔粉 */
+      --champagne: #f7e7ce;      /* 香檳色 */
+      --rose-gold: #c5a391;      /* 玫瑰金 (文字與重點) */
+      --card-bg: rgba(255, 255, 255, 0.85); /* 毛玻璃背景 */
+      --text-dark: #6d5d5a;      /* 深咖啡灰，比純黑溫柔 */
     }
 
     @keyframes fadeInUp {
@@ -25,175 +27,191 @@
     }
 
     body {
-      background: var(--bg-dark);
-      color: var(--text-main);
-      max-width: 600px; /* 3. 縮小整體框架寬度，手機版更精緻 */
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-dark);
+      max-width: 600px;
       margin: 0 auto;
-      padding: 20px 12px;
+      padding: 40px 16px;
       animation: fadeInUp 1s ease-out forwards;
     }
 
+    /* 浪漫風標題 */
     h1 { 
       text-align: center; 
-      color: var(--champagne-gold);
-      font-size: 1.8rem;
+      color: var(--rose-gold);
+      font-family: 'Dancing Script', cursive; /* 英文草寫增加高級感 */
+      font-size: 3rem;
       margin-bottom: 5px;
-      letter-spacing: 2px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
     }
     
     .subtitle {
       text-align: center;
-      font-size: 0.85rem;
-      color: var(--champagne-gold);
+      font-size: 0.9rem;
+      color: var(--rose-gold);
       opacity: 0.8;
-      margin-bottom: 30px;
-      letter-spacing: 4px;
+      margin-bottom: 40px;
+      letter-spacing: 6px;
+      font-weight: 700;
     }
 
+    /* 質感卡片：毛玻璃效果 */
     .card {
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 20px; /* 3. 縮小內距 */
-      margin-bottom: 20px;
-      border: 1px solid var(--champagne-gold); 
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 10px 30px rgba(109, 93, 90, 0.08); /* 柔和陰影 */
       animation: fadeInUp 1s ease-out 0.2s backwards;
     }
 
-    /* 統一按鈕與置中 */
     .btn-container {
       display: flex;
       flex-direction: column;
-      align-items: center; /* 2. 確保按鈕置中 */
+      align-items: center;
       width: 100%;
     }
 
+    /* 統一按鈕：柔和金屬感 */
     .btn-custom, button {
       display: block;
       width: 100%;
-      max-width: 240px;
-      padding: 12px 16px;
-      font-size: 15px;
+      max-width: 260px;
+      padding: 14px 20px;
+      font-size: 16px;
       font-weight: 700;
-      color: var(--bg-dark);
-      background: var(--champagne-gold);
-      border: 1px solid var(--champagne-gold);
-      border-radius: 6px;
+      color: white;
+      background: linear-gradient(135deg, #c5a391 0%, #b38d7a 100%);
+      border: none;
+      border-radius: 30px; /* 圓潤感更溫柔 */
       cursor: pointer;
-      transition: all 0.2s ease;
-      margin: 8px 0;
-      text-align: center;
-      text-decoration: none;
+      transition: all 0.3s ease;
+      margin: 10px 0;
+      box-shadow: 0 4px 15px rgba(197, 163, 145, 0.3);
     }
 
-    /* 點擊效果 */
     .btn-custom:active, button:active {
-      transform: scale(0.97);
-      box-shadow: 0 0 12px var(--champagne-gold);
+      transform: scale(0.95);
+      opacity: 0.9;
     }
 
     #fileInput { display: none; }
+    
+    /* 選擇照片按鈕：改用空心質感 */
     .file-label {
-      background: transparent;
-      color: var(--champagne-gold);
+      background: white !important;
+      color: var(--rose-gold) !important;
+      border: 1.5px solid var(--rose-gold) !important;
+      box-shadow: none !important;
     }
 
-    /* 4. 最新動態：統一正方形照片 */
+    /* 正方形照片預覽 */
     .gallery-preview {
       display: grid;
-      grid-template-columns: repeat(3, 1fr); /* 三張併排 */
-      gap: 10px;
-      margin-top: 15px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
     }
 
-    .gallery-preview .photo-item img {
+    .photo-item {
+      animation: fadeInUp 0.6s ease-out;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .photo-item img {
       width: 100%;
-      aspect-ratio: 1 / 1; /* 強制正方形 */
+      aspect-ratio: 1 / 1;
       object-fit: cover;
-      border-radius: 4px;
-      border: 1px solid #333;
+      transition: transform 0.3s ease;
+    }
+
+    /* 相片牆微動效 */
+    .photo-item img:hover {
+      transform: scale(1.05);
     }
 
     /* 全部相簿格線 */
     .gallery-full {
       display: grid;
-      grid-template-columns: repeat(2, 1fr); /* 全部照片時兩張一排 */
-      gap: 12px;
-    }
-
-    .photo-item {
-      animation: fadeInUp 0.6s ease-out;
-      text-align: center;
-    }
-
-    .photo-item img {
-      width: 100%;
-      border-radius: 4px;
-      cursor: zoom-in;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
     }
 
     .photo-buttons { 
       display: flex; 
       gap: 5px; 
-      margin-top: 5px; 
+      margin-top: 8px; 
       justify-content: center;
     }
 
     .photo-buttons button {
       padding: 6px;
       font-size: 11px;
-      max-width: 70px;
+      max-width: 80px;
       margin: 0;
+      border-radius: 15px;
     }
 
-    .btn-danger { background: #631d1d; border-color: #631d1d; color: white; }
+    .btn-danger { 
+      background: #e59a9a !important; 
+      box-shadow: none !important;
+    }
 
-    .status { font-size: 13px; color: var(--champagne-gold); text-align: center; margin-top: 8px; min-height: 18px; }
+    .status { font-size: 14px; color: var(--rose-gold); text-align: center; margin-top: 10px; font-weight: 500; }
 
-    /* 全相簿切換 */
+    /* 切換顯示控制 */
     #allPhotosSection { display: none; }
     .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn, .viewing-all #gallery { display: none; }
     .viewing-all #allPhotosSection { display: block; }
 
     #previewOverlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+      position: fixed; inset: 0; background: rgba(255,255,255,0.95);
       display: none; align-items: center; justify-content: center; z-index: 9999;
     }
-    #previewImage { max-width: 95%; max-height: 80%; border: 1px solid var(--champagne-gold); }
+    #previewImage { 
+        max-width: 90%; 
+        max-height: 80%; 
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
 
-  <h1>JAY & MICHELLE</h1>
+  <h1>Jay & Michelle</h1>
   <div class="subtitle">WEDDING GALLERY</div>
 
   <div id="mainUploadSection" class="card">
     <div class="btn-container">
         <label for="fileInput" class="btn-custom file-label">＋ 選擇照片</label>
         <input id="fileInput" type="file" accept="image/*" multiple />
-        <button id="uploadBtn">上傳分享幸福</button>
+        <button id="uploadBtn">上傳分享喜悅</button>
     </div>
     <div id="uploadStatus" class="status"></div>
   </div>
 
   <div class="card">
-    <h3 id="previewTitle" style="text-align: center; color: var(--champagne-gold); font-size: 1rem; margin-top: 0;">LATEST MOMENTS</h3>
+    <h3 id="previewTitle" style="text-align: center; color: var(--rose-gold); font-size: 1.1rem; margin-top: 0; letter-spacing: 2px;">最新動態</h3>
     
     <div id="gallery" class="gallery-preview"></div>
     
     <div class="btn-container">
-        <button id="viewAllBtn" class="btn-custom" style="margin-top: 20px;">瀏覽所有照片</button>
+        <button id="viewAllBtn" class="btn-custom" style="margin-top: 25px;">瀏覽所有幸福瞬間</button>
     </div>
 
     <div id="allPhotosSection">
-      <h3 style="text-align: center; color: var(--champagne-gold); font-size: 1rem;">ALL PHOTOS</h3>
+      <h3 style="text-align: center; color: var(--rose-gold); font-size: 1.1rem;">幸福回憶錄</h3>
       <div id="fullGallery" class="gallery-full"></div>
       <div class="btn-container">
-          <button id="backBtn" class="btn-custom" style="background: transparent; color: var(--champagne-gold); margin-top: 30px;">返回上傳</button>
+          <button id="backBtn" class="btn-custom file-label" style="margin-top: 35px;">返回首頁</button>
       </div>
     </div>
 
-    <p id="emptyMsg" style="text-align:center; color:#555; display:none; font-size: 13px;">尚未有照片</p>
+    <p id="emptyMsg" style="text-align:center; color:#b5a6a3; display:none; font-size: 14px;">期待您的第一張照片</p>
   </div>
 
   <div id="previewOverlay">
@@ -201,6 +219,7 @@
   </div>
 
   <script type="module">
+    // (此處保留之前的 Firebase 與 Cloudinary 腳本邏輯)
     const CLOUD_NAME    = "dclcbrfs8"; 
     const UPLOAD_PRESET = "wedding-photos"; 
 
@@ -274,7 +293,7 @@
           div.innerHTML = `
             <img src="${getDisplayUrl(data.url)}" onclick="showPreview('${data.url.replace('/upload/', '/upload/q_auto,f_auto/')}')">
             <div class="photo-buttons">
-              <button onclick="downloadImage('${data.url}', 'Wedding.jpg')">下載</button>
+              <button onclick="downloadImage('${data.url}', 'Wedding.jpg')">保存</button>
               ${currentUser && data.ownerId === currentUser.uid ? `<button class="btn-danger" onclick="deletePhoto('${docSnap.id}')">刪除</button>` : ''}
             </div>
           `;
@@ -302,7 +321,7 @@
     };
 
     window.deletePhoto = async (id) => {
-      if (confirm("確定刪除？")) {
+      if (confirm("要刪除照片嗎？")) {
         await deleteDoc(doc(db, "wedding_photos", id));
         loadGallery(document.body.classList.contains('viewing-all'));
       }
