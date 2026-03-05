@@ -7,13 +7,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* 重新配製：溫柔感配色 */
-      --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); /* 珍珠白 */
-      --main-pink: #f5e3e0;      /* 溫柔粉 */
-      --champagne: #f7e7ce;      /* 香檳色 */
-      --rose-gold: #c5a391;      /* 玫瑰金 (文字與重點) */
-      --card-bg: rgba(255, 255, 255, 0.85); /* 毛玻璃背景 */
-      --text-dark: #6d5d5a;      /* 深咖啡灰，比純黑溫柔 */
+      --rose-gold: #c5a391;
+      --champagne: #f7e7ce;
+      --soft-pink: #f5e3e0;
+      --text-dark: #5a4d4a;
+    }
+
+    /* 1. 不規則漸層背景 (Mesh Gradient) */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: #fdfbfb;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(245, 227, 224, 0.5) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(247, 231, 206, 0.5) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(197, 163, 145, 0.2) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(245, 227, 224, 0.5) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(247, 231, 206, 0.3) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-dark);
+      font-family: 'Noto Serif TC', serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px;
     }
 
     @keyframes fadeInUp {
@@ -21,86 +38,54 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    * {
-      box-sizing: border-box;
-      font-family: 'Noto Serif TC', serif;
-    }
+    .container { width: 100%; max-width: 500px; animation: fadeInUp 1s ease-out; }
 
-    body {
-      background: var(--bg-gradient);
-      background-attachment: fixed;
-      color: var(--text-dark);
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 40px 16px;
-      animation: fadeInUp 1s ease-out forwards;
-    }
-
-    /* 浪漫風標題 */
     h1 { 
       text-align: center; 
       color: var(--rose-gold);
-      font-family: 'Dancing Script', cursive; /* 英文草寫增加高級感 */
-      font-size: 3rem;
-      margin-bottom: 5px;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+      font-family: 'Dancing Script', cursive;
+      font-size: 3.2rem;
+      margin: 0;
     }
     
     .subtitle {
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--rose-gold);
-      opacity: 0.8;
-      margin-bottom: 40px;
-      letter-spacing: 6px;
+      margin-bottom: 35px;
+      letter-spacing: 5px;
       font-weight: 700;
     }
 
-    /* 質感卡片：毛玻璃效果 */
     .card {
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 25px;
-      margin-bottom: 25px;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      box-shadow: 0 10px 30px rgba(109, 93, 90, 0.08); /* 柔和陰影 */
-      animation: fadeInUp 1s ease-out 0.2s backwards;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 15px 35px rgba(109, 93, 90, 0.05);
     }
 
-    .btn-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
+    .btn-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
 
-    /* 統一按鈕：柔和金屬感 */
     .btn-custom, button {
-      display: block;
-      width: 100%;
-      max-width: 260px;
+      width: 100%; max-width: 240px;
       padding: 14px 20px;
-      font-size: 16px;
-      font-weight: 700;
+      font-size: 16px; font-weight: 700;
       color: white;
       background: linear-gradient(135deg, #c5a391 0%, #b38d7a 100%);
-      border: none;
-      border-radius: 30px; /* 圓潤感更溫柔 */
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin: 10px 0;
-      box-shadow: 0 4px 15px rgba(197, 163, 145, 0.3);
+      border: none; border-radius: 30px;
+      cursor: pointer; transition: all 0.3s ease;
+      margin: 8px 0;
+      box-shadow: 0 5px 15px rgba(197, 163, 145, 0.2);
     }
 
-    .btn-custom:active, button:active {
-      transform: scale(0.95);
-      opacity: 0.9;
-    }
+    .btn-custom:active { transform: scale(0.96); }
 
+    /* 批量上傳：隱藏原按鈕 */
     #fileInput { display: none; }
-    
-    /* 選擇照片按鈕：改用空心質感 */
     .file-label {
       background: white !important;
       color: var(--rose-gold) !important;
@@ -108,118 +93,79 @@
       box-shadow: none !important;
     }
 
-    /* 正方形照片預覽 */
+    /* 首頁最新三張：正方形 */
     .gallery-preview {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 20px;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin: 15px 0;
     }
 
-    .photo-item {
-      animation: fadeInUp 0.6s ease-out;
-      border-radius: 12px;
-      overflow: hidden;
+    .photo-item { border-radius: 12px; overflow: hidden; position: relative; }
+    .photo-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; cursor: pointer; }
+
+    /* 下載與刪除小按鈕 */
+    .photo-buttons { display: flex; gap: 4px; padding: 5px; justify-content: center; }
+    .photo-buttons button { 
+      padding: 5px; font-size: 10px; margin: 0; 
+      background: rgba(197, 163, 145, 0.8); max-width: 50px; 
     }
+    .btn-danger { background: rgba(229, 154, 154, 0.8) !important; }
 
-    .photo-item img {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
+    /* 全相簿：兩列 */
+    .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 
-    /* 相片牆微動效 */
-    .photo-item img:hover {
-      transform: scale(1.05);
-    }
+    .status { font-size: 14px; color: var(--rose-gold); text-align: center; margin-top: 10px; font-weight: 700; }
 
-    /* 全部相簿格線 */
-    .gallery-full {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
-
-    .photo-buttons { 
-      display: flex; 
-      gap: 5px; 
-      margin-top: 8px; 
-      justify-content: center;
-    }
-
-    .photo-buttons button {
-      padding: 6px;
-      font-size: 11px;
-      max-width: 80px;
-      margin: 0;
-      border-radius: 15px;
-    }
-
-    .btn-danger { 
-      background: #e59a9a !important; 
-      box-shadow: none !important;
-    }
-
-    .status { font-size: 14px; color: var(--rose-gold); text-align: center; margin-top: 10px; font-weight: 500; }
-
-    /* 切換顯示控制 */
     #allPhotosSection { display: none; }
     .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn, .viewing-all #gallery { display: none; }
     .viewing-all #allPhotosSection { display: block; }
 
     #previewOverlay {
-      position: fixed; inset: 0; background: rgba(255,255,255,0.95);
+      position: fixed; inset: 0; background: rgba(255,255,255,0.9);
       display: none; align-items: center; justify-content: center; z-index: 9999;
     }
-    #previewImage { 
-        max-width: 90%; 
-        max-height: 80%; 
-        border-radius: 10px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    }
+    #previewImage { max-width: 90%; max-height: 80%; border-radius: 15px; }
   </style>
 </head>
 <body>
 
-  <h1>Jay & Michelle</h1>
-  <div class="subtitle">WEDDING GALLERY</div>
+  <div class="container">
+    <h1>Jay & Michelle</h1>
+    <div class="subtitle">WEDDING GALLERY</div>
 
-  <div id="mainUploadSection" class="card">
-    <div class="btn-container">
-        <label for="fileInput" class="btn-custom file-label">＋ 選擇照片</label>
-        <input id="fileInput" type="file" accept="image/*" multiple />
-        <button id="uploadBtn">上傳分享喜悅</button>
-    </div>
-    <div id="uploadStatus" class="status"></div>
-  </div>
-
-  <div class="card">
-    <h3 id="previewTitle" style="text-align: center; color: var(--rose-gold); font-size: 1.1rem; margin-top: 0; letter-spacing: 2px;">最新動態</h3>
-    
-    <div id="gallery" class="gallery-preview"></div>
-    
-    <div class="btn-container">
-        <button id="viewAllBtn" class="btn-custom" style="margin-top: 25px;">瀏覽所有幸福瞬間</button>
-    </div>
-
-    <div id="allPhotosSection">
-      <h3 style="text-align: center; color: var(--rose-gold); font-size: 1.1rem;">幸福回憶錄</h3>
-      <div id="fullGallery" class="gallery-full"></div>
+    <div id="mainUploadSection" class="card">
       <div class="btn-container">
-          <button id="backBtn" class="btn-custom file-label" style="margin-top: 35px;">返回首頁</button>
+          <label for="fileInput" class="btn-custom file-label">＋ 批量選擇照片</label>
+          <input id="fileInput" type="file" accept="image/*" multiple />
+          <button id="uploadBtn">開始傳送幸福</button>
       </div>
+      <div id="uploadStatus" class="status"></div>
     </div>
 
-    <p id="emptyMsg" style="text-align:center; color:#b5a6a3; display:none; font-size: 14px;">期待您的第一張照片</p>
+    <div class="card">
+      <h3 id="previewTitle" style="text-align: center; color: var(--rose-gold); font-size: 1rem; margin-top: 0; letter-spacing: 2px;">LATEST</h3>
+      
+      <div id="gallery" class="gallery-preview"></div>
+      
+      <div class="btn-container">
+          <button id="viewAllBtn" class="btn-custom">瀏覽所有照片</button>
+      </div>
+
+      <div id="allPhotosSection">
+        <h3 style="text-align: center; color: var(--rose-gold); font-size: 1rem;">ALL MEMORIES</h3>
+        <div id="fullGallery" class="gallery-full"></div>
+        <div class="btn-container">
+            <button id="backBtn" class="btn-custom file-label">返回</button>
+        </div>
+      </div>
+
+      <p id="emptyMsg" style="text-align:center; color:#b5a6a3; display:none;">尚無照片</p>
+    </div>
   </div>
 
-  <div id="previewOverlay">
-    <img id="previewImage" src="" alt="預覽">
-  </div>
+  <div id="previewOverlay"><img id="previewImage" src=""></div>
 
   <script type="module">
-    // (此處保留之前的 Firebase 與 Cloudinary 腳本邏輯)
+    // Firebase 設定 (維持不變)
     const CLOUD_NAME    = "dclcbrfs8"; 
     const UPLOAD_PRESET = "wedding-photos"; 
 
@@ -250,42 +196,28 @@
     const backBtn = document.getElementById("backBtn");
     const uploadBtn = document.getElementById("uploadBtn");
     const fileInput = document.getElementById("fileInput");
+    const uploadStatus = document.getElementById("uploadStatus");
 
     let currentUser = null;
-
-    viewAllBtn.onclick = () => {
-      document.body.classList.add('viewing-all');
-      loadGallery(true);
-      window.scrollTo(0, 0);
-    };
-    backBtn.onclick = () => {
-      document.body.classList.remove('viewing-all');
-      loadGallery(false);
-      window.scrollTo(0, 0);
-    };
 
     onAuthStateChanged(auth, async (user) => {
       if (user) { currentUser = user; await loadGallery(false); }
       else { await signInAnonymously(auth); }
     });
 
-    function getDisplayUrl(url) {
-      return url.replace('/upload/', '/upload/c_fill,h_600,w_600,q_auto,f_auto/');
-    }
+    viewAllBtn.onclick = () => { document.body.classList.add('viewing-all'); loadGallery(true); };
+    backBtn.onclick = () => { document.body.classList.remove('viewing-all'); loadGallery(false); };
+
+    function getDisplayUrl(url) { return url.replace('/upload/', '/upload/c_fill,h_600,w_600,q_auto,f_auto/'); }
 
     async function loadGallery(isFull = false) {
       const targetGallery = isFull ? fullGallery : gallery;
       targetGallery.innerHTML = "";
-      document.getElementById("emptyMsg").style.display = "none";
-
       try {
-        const q = isFull 
-          ? query(photosCol, orderBy("createdAt", "desc")) 
-          : query(photosCol, orderBy("createdAt", "desc"), limit(3));
-        
+        const q = isFull ? query(photosCol, orderBy("createdAt", "desc")) : query(photosCol, orderBy("createdAt", "desc"), limit(3));
         const snap = await getDocs(q);
         if (snap.empty) { document.getElementById("emptyMsg").style.display = "block"; return; }
-
+        document.getElementById("emptyMsg").style.display = "none";
         snap.forEach(docSnap => {
           const data = docSnap.data();
           const div = document.createElement("div");
@@ -293,7 +225,7 @@
           div.innerHTML = `
             <img src="${getDisplayUrl(data.url)}" onclick="showPreview('${data.url.replace('/upload/', '/upload/q_auto,f_auto/')}')">
             <div class="photo-buttons">
-              <button onclick="downloadImage('${data.url}', 'Wedding.jpg')">保存</button>
+              <button onclick="downloadImage('${data.url}')">保存</button>
               ${currentUser && data.ownerId === currentUser.uid ? `<button class="btn-danger" onclick="deletePhoto('${docSnap.id}')">刪除</button>` : ''}
             </div>
           `;
@@ -302,49 +234,55 @@
       } catch (e) { console.error(e); }
     }
 
-    window.showPreview = (url) => {
-      const overlay = document.getElementById("previewOverlay");
-      const img = document.getElementById("previewImage");
-      img.src = url;
-      overlay.style.display = "flex";
+    // 批量上傳功能邏輯
+    uploadBtn.onclick = async () => {
+      const files = Array.from(fileInput.files);
+      if (!files.length) { alert("請先選擇照片"); return; }
+      
+      uploadBtn.disabled = true;
+      const total = files.length;
+      
+      for (let i = 0; i < total; i++) {
+        uploadStatus.textContent = `上傳中 (${i + 1}/${total})...`;
+        try {
+          const formData = new FormData();
+          formData.append("file", files[i]);
+          formData.append("upload_preset", UPLOAD_PRESET);
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
+          const result = await res.json();
+          await addDoc(photosCol, { publicId: result.public_id, url: result.secure_url, ownerId: currentUser.uid, createdAt: serverTimestamp() });
+        } catch (err) {
+          console.error("第 " + (i+1) + " 張上傳失敗");
+        }
+      }
+      
+      uploadStatus.textContent = "傳送成功！✨";
+      fileInput.value = "";
+      uploadBtn.disabled = false;
+      setTimeout(() => { uploadStatus.textContent = ""; }, 3000);
+      loadGallery(false);
     };
 
+    window.showPreview = (url) => {
+      document.getElementById("previewImage").src = url;
+      document.getElementById("previewOverlay").style.display = "flex";
+    };
     document.getElementById("previewOverlay").onclick = function() { this.style.display = "none"; };
 
-    window.downloadImage = async (url, filename) => {
+    window.downloadImage = async (url) => {
       const res = await fetch(url, { mode: 'cors' });
       const blob = await res.blob();
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = filename;
+      a.download = "WeddingPhoto.jpg";
       a.click();
     };
 
     window.deletePhoto = async (id) => {
-      if (confirm("要刪除照片嗎？")) {
+      if (confirm("要刪除嗎？")) {
         await deleteDoc(doc(db, "wedding_photos", id));
         loadGallery(document.body.classList.contains('viewing-all'));
       }
-    };
-
-    uploadBtn.onclick = async () => {
-      const files = Array.from(fileInput.files);
-      if (!files.length) return;
-      uploadBtn.disabled = true;
-      document.getElementById("uploadStatus").textContent = "正在傳送...";
-
-      for (const file of files) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", UPLOAD_PRESET);
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
-        const result = await res.json();
-        await addDoc(photosCol, { publicId: result.public_id, url: result.secure_url, ownerId: currentUser.uid, createdAt: serverTimestamp() });
-      }
-      document.getElementById("uploadStatus").textContent = "完成！";
-      fileInput.value = "";
-      uploadBtn.disabled = false;
-      loadGallery(false);
     };
   </script>
 </body>
