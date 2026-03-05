@@ -7,11 +7,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #a78b71; /* 莫蘭迪金棕 */
-      --secondary-color: #e8dcd4; /* 奶油粉白 */
-      --accent-color: #8da399; /* 鼠尾草綠 */
+      --primary-color: #a78b71;
+      --secondary-color: #e8dcd4;
+      --accent-color: #8da399;
       --bg-color: #f9f7f5;
       --text-color: #5a4a42;
+    }
+
+    /* 3. 全頁面與元素淡入效果 */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     body {
@@ -22,9 +28,10 @@
       background: var(--bg-color);
       color: var(--text-color);
       line-height: 1.6;
+      opacity: 0; /* 初始隱藏，配合動畫 */
+      animation: fadeInUp 1.2s ease-out forwards;
     }
 
-    /* 浪漫風標題 */
     h1 { 
       text-align: center; 
       font-family: 'Playfair Display', serif;
@@ -50,9 +57,10 @@
       margin-bottom: 30px;
       box-shadow: 0 10px 30px rgba(167, 139, 113, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.3);
+      /* 讓卡片也有微小的延遲淡入感 */
+      animation: fadeInUp 1s ease-out 0.3s backwards;
     }
 
-    /* 上傳區域美化 */
     .upload-area { 
       text-align: center; 
       border: 2px dashed var(--secondary-color); 
@@ -64,12 +72,6 @@
       background: rgba(255, 255, 255, 1);
     }
 
-    input[type="file"] {
-      padding: 10px;
-      font-size: 14px;
-    }
-
-    /* 按鈕樣式優化 */
     button {
       border: none;
       border-radius: 50px;
@@ -91,18 +93,13 @@
       box-shadow: 0 6px 20px rgba(167, 139, 113, 0.3);
     }
 
-    .btn-primary:disabled { 
-      background: #d7ccc8; 
-      transform: none;
-    }
-
     .btn-danger { background: #f4b0b0; color: #fff; padding: 6px 14px; font-size: 12px; }
     .btn-download { background: var(--accent-color); color: #fff; padding: 6px 14px; font-size: 12px; }
 
-    /* 相簿格線 */
+    /* 相簿格線：1. 限制只顯示最新三張的佈局 */
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 20px;
     }
 
@@ -112,19 +109,16 @@
       overflow: hidden;
       padding: 10px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-      transition: transform 0.3s ease;
-    }
-    
-    .photo-item:hover {
-      transform: scale(1.02);
+      animation: fadeInUp 0.8s ease-out;
     }
 
     .photo-item img {
       width: 100%;
-      height: 220px;
+      height: 300px;
       object-fit: cover;
       border-radius: 10px;
       cursor: zoom-in;
+      background: #f0f0f0;
     }
 
     .photo-buttons {
@@ -157,7 +151,7 @@
 </head>
 <body>
 
-  <h1> Jay & Michelle</h1>
+  <h1>Jay & Michelle</h1>
   <div class="subtitle">WEDDING DAY</div>
 
   <div class="card upload-area">
@@ -168,8 +162,9 @@
   </div>
 
   <div class="card">
+    <h3 style="text-align: center; color: var(--primary-color); margin-top: 0; font-weight: 500;">最新幸福瞬間</h3>
     <div id="gallery" class="gallery"></div>
-    <p id="emptyMsg" style="text-align:center; color:#bbb; display:none; font-style: italic;">捕捉幸福瞬間，期待您的第一張照片。</p>
+    <p id="emptyMsg" style="text-align:center; color:#bbb; display:none; font-style: italic;">期待您的第一張照片...</p>
   </div>
 
   <div id="previewOverlay">
@@ -177,13 +172,12 @@
   </div>
 
   <script type="module">
-    // (這裡保留你原本的 Firebase 和 Cloudinary Script 邏輯，內容不變)
-    // ... 保持你提供的 JS 代碼 ...
+    // Cloudinary & Firebase 設定
     const CLOUD_NAME    = "dclcbrfs8"; 
     const UPLOAD_PRESET = "wedding-photos"; 
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc } 
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc } 
       from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } 
       from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
@@ -222,6 +216,12 @@
       }
     });
 
+    // 2. 壓縮顯示照片 (Cloudinary 動態轉換)
+    function getDisplayUrl(originalUrl) {
+      // 插入 c_scale,w_800 (縮放寬度) 和 q_auto,f_auto (自動品質與格式轉換)
+      return originalUrl.replace('/upload/', '/upload/c_scale,w_800,q_auto,f_auto/');
+    }
+
     async function downloadImage(url, filename) {
       try {
         const res = await fetch(url, { mode: 'cors' });
@@ -248,7 +248,8 @@
       gallery.innerHTML = "";
       emptyMsg.style.display = "none";
       try {
-        const q = query(photosCol, orderBy("createdAt", "desc"));
+        // 1. 只取得最新三張照片：使用 limit(3)
+        const q = query(photosCol, orderBy("createdAt", "desc"), limit(3));
         const snap = await getDocs(q);
         if (snap.empty) { emptyMsg.style.display = "block"; return; }
 
@@ -258,9 +259,10 @@
           div.className = "photo-item";
 
           const img = document.createElement("img");
-          img.src = data.url;
+          // 這裡使用壓縮過的網址供網頁顯示
+          img.src = getDisplayUrl(data.url);
           img.onclick = () => {
-            previewImage.src = data.url;
+            previewImage.src = getDisplayUrl(data.url);
             previewOverlay.style.display = "flex";
           };
 
@@ -269,8 +271,9 @@
 
           const downBtn = document.createElement("button");
           downBtn.className = "btn-download";
-          downBtn.textContent = "下載";
-          downBtn.onclick = () => downloadImage(data.url, data.publicId + ".jpg");
+          downBtn.textContent = "下載原圖";
+          // 這裡傳入 data.url，確下載的是原始高畫質檔案
+          downBtn.onclick = () => downloadImage(data.url, "Wedding_" + data.publicId + ".jpg");
 
           btns.appendChild(downBtn);
 
@@ -320,7 +323,7 @@
             createdAt: serverTimestamp()
           });
         }
-        uploadStatus.textContent = "上傳成功！感謝您的祝福";
+        uploadStatus.textContent = "上傳成功！";
         fileInput.value = "";
         await loadGallery();
       } catch (e) {
@@ -335,4 +338,3 @@
   </script>
 </body>
 </html>
-
