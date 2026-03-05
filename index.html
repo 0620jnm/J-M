@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wedding 照片分享</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+      background: #fdfaf6;
+      color: #333;
+    }
+    h1 { text-align: center; color: #5d4037; margin-bottom: 24px; }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .upload-area { text-align: center; border: 2px dashed #d7ccc8; }
+    .upload-area input[type="file"] { margin: 12px 0; }
+    
+    button {
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    button:active { opacity: 0.7; }
+    .btn-primary { background: #8d6e63; color: #fff; }
+    .btn-primary:disabled { background: #d7ccc8; cursor: not-allowed; }
+    .btn-danger { background: #e57373; color: #fff; }
+    .btn-download { background: #a1887f; color: #fff; }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .photo-item {
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .photo-item img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: zoom-in;
+    }
+    .photo-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    .status { font-size: 13px; color: #795548; text-align: center; margin-top: 10px; height: 20px; }
+    
+    /* 放大預覽層 */
+    #previewOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      cursor: zoom-out;
+    }
+    #previewImage {
+      max-width: 95%;
+      max-height: 95%;
+      border-radius: 4px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wedding 照片分享</h1>
+
+  <div class="card upload-area">
+    <input id="fileInput" type="file" accept="image/*" multiple />
+    <br />
+    <button id="uploadBtn" class="btn-primary">上傳照片</button>
+    <div id="uploadStatus" class="status"></div>
+  </div>
+
+  <div class="card">
+    <div id="gallery" class="gallery"></div>
+    <p id="emptyMsg" style="text-align:center; color:#999; display:none;">目前還沒有照片，快來當第一個上傳的人吧！</p>
+  </div>
+
+  <!-- 點擊放大顯示層 -->
+  <div id="previewOverlay">
+    <img id="previewImage" src="" alt="預覽">
+  </div>
+
+  <script type="module">
+    // ===== 1. Cloudinary 設定 (請確認與後台一致) =====
+    const CLOUD_NAME    = "dclcbrfs8"; 
+    const UPLOAD_PRESET = "wedding-photos"; 
+
+    // ===== 2. Firebase 設定 (照你提供的貼回) =====
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc } 
+      from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInAnonymously } 
+      from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBzK8lLQTr_Z3dn-TNOUslX1sAw3PV9TY0",
+      authDomain: "wedding-ef203.firebaseapp.com",
+      projectId: "wedding-ef203",
+      storageBucket: "wedding-ef203.firebasestorage.app",
+      messagingSenderId: "791365577253",
+      appId: "1:791365577253:web:018970a9904007b3e8adcc",
+      measurementId: "G-C086ETKN7J"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+    const auth = getAuth(app);
+    const photosCol = collection(db, "wedding_photos");
+
+    const fileInput = document.getElementById("fileInput");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const uploadStatus = document.getElementById("uploadStatus");
+    const gallery = document.getElementById("gallery");
+    const emptyMsg = document.getElementById("emptyMsg");
+    const previewOverlay = document.getElementById("previewOverlay");
+    const previewImage = document.getElementById("previewImage");
+
+    let currentUser = null;
+
+    // 匿名登入 [web:143]
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        await loadGallery();
+      } else {
+        await signInAnonymously(auth);
+      }
+    });
+
+    // 強制下載函式 [web:179]
+    async function downloadImage(url, filename) {
+      try {
+        const res = await fetch(url, { mode: 'cors' });
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(blobUrl);
+      } catch (e) {
+        alert("下載失敗，請長按圖片手動儲存。");
+      }
+    }
+
+    // 關閉預覽
+    previewOverlay.addEventListener("click", () => {
+      previewOverlay.style.display = "none";
+      previewImage.src = "";
+    });
+
+    // 載入照片清單 [web:85]
+    async function loadGallery() {
+      gallery.innerHTML = "";
+      emptyMsg.style.display = "none";
+      try {
+        const q = query(photosCol, orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        if (snap.empty) { emptyMsg.style.display = "block"; return; }
+
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const div = document.createElement("div");
+          div.className = "photo-item";
+
+          const img = document.createElement("img");
+          img.src = data.url;
+          // 點擊放大
+          img.onclick = () => {
+            previewImage.src = data.url;
+            previewOverlay.style.display = "flex";
+          };
+
+          const btns = document.createElement("div");
+          btns.className = "photo-buttons";
+
+          const downBtn = document.createElement("button");
+          downBtn.className = "btn-download";
+          downBtn.textContent = "下載";
+          downBtn.onclick = () => downloadImage(data.url, data.publicId + ".jpg");
+
+          btns.appendChild(downBtn);
+
+          // 只有擁有者可以看見刪除鈕 [web:134]
+          if (currentUser && data.ownerId === currentUser.uid) {
+            const delBtn = document.createElement("button");
+            delBtn.className = "btn-danger";
+            delBtn.textContent = "刪除";
+            delBtn.onclick = async () => {
+              if (confirm("要刪除這張照片嗎？")) {
+                await deleteDoc(docSnap.ref);
+                loadGallery();
+              }
+            };
+            btns.appendChild(delBtn);
+          }
+
+          div.appendChild(img);
+          div.appendChild(btns);
+          gallery.appendChild(div);
+        });
+      } catch (e) { console.error(e); }
+    }
+
+    // 上傳流程 [web:84]
+    async function handleUpload() {
+      const files = Array.from(fileInput.files);
+      if (!files.length || !currentUser) return;
+
+      uploadBtn.disabled = true;
+      uploadStatus.textContent = "上傳中...";
+
+      try {
+        for (const file of files) {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("upload_preset", UPLOAD_PRESET);
+
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+            method: "POST",
+            body: formData
+          });
+          const result = await res.json();
+
+          await addDoc(photosCol, {
+            publicId: result.public_id,
+            url: result.secure_url,
+            ownerId: currentUser.uid,
+            createdAt: serverTimestamp()
+          });
+        }
+        uploadStatus.textContent = "完成！";
+        fileInput.value = "";
+        await loadGallery();
+      } catch (e) {
+        alert("上傳出錯，請檢查網路。");
+      } finally {
+        uploadBtn.disabled = false;
+        setTimeout(() => uploadStatus.textContent = "", 3000);
+      }
+    }
+
+    uploadBtn.onclick = handleUpload;
+  </script>
+</body>
+</html>
