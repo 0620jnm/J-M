@@ -7,140 +7,159 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #1a1a1a;        /* 深色背景 */
-      --card-bg: #262626;        /* 卡片深灰 */
-      --gold-color: #d4af37;     /* 經典金 */
-      --gold-light: #f1d592;     /* 亮金 */
-      --text-main: #e0e0e0;      /* 主文字色 */
+      --bg-dark: #121212;        
+      --card-bg: #1e1e1e;        
+      --champagne-gold: #F7E7CE;  /* 香檳金 */
+      --soft-gold: #D4AF37;       /* 點綴金 */
+      --text-main: #f0f0f0;      
     }
 
-    /* 淡入效果 */
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(15px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     * {
       box-sizing: border-box;
-      font-family: 'Noto Serif TC', serif; /* 統一字體 */
+      font-family: 'Noto Serif TC', serif;
     }
 
     body {
       background: var(--bg-dark);
       color: var(--text-main);
-      max-width: 900px;
+      max-width: 600px; /* 3. 縮小整體框架寬度，手機版更精緻 */
       margin: 0 auto;
-      padding: 30px 16px;
-      animation: fadeInUp 1.2s ease-out forwards;
+      padding: 20px 12px;
+      animation: fadeInUp 1s ease-out forwards;
     }
 
     h1 { 
       text-align: center; 
-      color: var(--gold-color);
-      font-size: 2.2rem;
-      margin-bottom: 8px;
-      letter-spacing: 3px;
+      color: var(--champagne-gold);
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+      letter-spacing: 2px;
     }
     
     .subtitle {
       text-align: center;
-      font-size: 1rem;
-      color: var(--gold-light);
-      margin-bottom: 40px;
-      letter-spacing: 5px;
+      font-size: 0.85rem;
+      color: var(--champagne-gold);
+      opacity: 0.8;
+      margin-bottom: 30px;
+      letter-spacing: 4px;
     }
 
     .card {
       background: var(--card-bg);
-      border-radius: 15px;
-      padding: 30px;
-      margin-bottom: 30px;
-      border: 1.5px solid var(--gold-color); /* 金色外框 */
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      animation: fadeInUp 1s ease-out 0.3s backwards;
+      border-radius: 12px;
+      padding: 20px; /* 3. 縮小內距 */
+      margin-bottom: 20px;
+      border: 1px solid var(--champagne-gold); 
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      animation: fadeInUp 1s ease-out 0.2s backwards;
     }
 
-    /* 統一按鈕樣式 */
-    .btn-custom, button {
-      display: inline-block;
+    /* 統一按鈕與置中 */
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* 2. 確保按鈕置中 */
       width: 100%;
-      max-width: 280px;
-      padding: 14px 20px;
-      font-size: 16px;
+    }
+
+    .btn-custom, button {
+      display: block;
+      width: 100%;
+      max-width: 240px;
+      padding: 12px 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--bg-dark);
-      background: var(--gold-color);
-      border: 2px solid var(--gold-color);
-      border-radius: 8px;
+      background: var(--champagne-gold);
+      border: 1px solid var(--champagne-gold);
+      border-radius: 6px;
       cursor: pointer;
+      transition: all 0.2s ease;
+      margin: 8px 0;
       text-align: center;
-      transition: all 0.3s ease;
-      margin: 10px auto;
       text-decoration: none;
     }
 
-    /* 按鈕點擊效果 */
+    /* 點擊效果 */
     .btn-custom:active, button:active {
-      transform: scale(0.96);
-      box-shadow: 0 0 15px var(--gold-color);
+      transform: scale(0.97);
+      box-shadow: 0 0 12px var(--champagne-gold);
     }
 
-    .btn-custom:hover, button:hover {
-      background: var(--gold-light);
-      border-color: var(--gold-light);
-    }
-
-    /* 隱藏預設 input file，用 label 做成金色按鈕 */
     #fileInput { display: none; }
     .file-label {
       background: transparent;
-      color: var(--gold-color);
-      margin-bottom: 20px;
+      color: var(--champagne-gold);
     }
 
-    .gallery {
+    /* 4. 最新動態：統一正方形照片 */
+    .gallery-preview {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(3, 1fr); /* 三張併排 */
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .gallery-preview .photo-item img {
+      width: 100%;
+      aspect-ratio: 1 / 1; /* 強制正方形 */
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #333;
+    }
+
+    /* 全部相簿格線 */
+    .gallery-full {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* 全部照片時兩張一排 */
+      gap: 12px;
     }
 
     .photo-item {
-      background: #000;
-      border-radius: 10px;
-      padding: 8px;
-      border: 1px solid #444;
-      animation: fadeInUp 0.8s ease-out;
+      animation: fadeInUp 0.6s ease-out;
+      text-align: center;
     }
 
     .photo-item img {
       width: 100%;
-      height: 280px;
-      object-fit: cover;
-      border-radius: 6px;
+      border-radius: 4px;
       cursor: zoom-in;
     }
 
-    /* 照片下方的小按鈕也要統一 */
-    .photo-buttons { display: flex; gap: 8px; margin-top: 10px; }
-    .photo-buttons button {
-      padding: 8px;
-      font-size: 13px;
-      flex: 1;
+    .photo-buttons { 
+      display: flex; 
+      gap: 5px; 
+      margin-top: 5px; 
+      justify-content: center;
     }
-    .btn-danger { background: #8b0000; border-color: #8b0000; color: white; }
 
-    .status { font-size: 14px; color: var(--gold-light); text-align: center; margin-top: 10px; min-height: 20px; }
+    .photo-buttons button {
+      padding: 6px;
+      font-size: 11px;
+      max-width: 70px;
+      margin: 0;
+    }
 
-    /* 全相簿切換控制 */
+    .btn-danger { background: #631d1d; border-color: #631d1d; color: white; }
+
+    .status { font-size: 13px; color: var(--champagne-gold); text-align: center; margin-top: 8px; min-height: 18px; }
+
+    /* 全相簿切換 */
     #allPhotosSection { display: none; }
-    .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn { display: none; }
+    .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn, .viewing-all #gallery { display: none; }
     .viewing-all #allPhotosSection { display: block; }
 
     #previewOverlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.9);
       display: none; align-items: center; justify-content: center; z-index: 9999;
     }
-    #previewImage { max-width: 95%; max-height: 95%; border: 3px solid var(--gold-color); }
+    #previewImage { max-width: 95%; max-height: 80%; border: 1px solid var(--champagne-gold); }
   </style>
 </head>
 <body>
@@ -148,27 +167,33 @@
   <h1>JAY & MICHELLE</h1>
   <div class="subtitle">WEDDING GALLERY</div>
 
-  <div id="mainUploadSection" class="card" style="text-align: center;">
-    <label for="fileInput" class="btn-custom file-label">＋ 選擇照片</label>
-    <input id="fileInput" type="file" accept="image/*" multiple />
-    
-    <button id="uploadBtn">上傳照片分享幸福</button>
+  <div id="mainUploadSection" class="card">
+    <div class="btn-container">
+        <label for="fileInput" class="btn-custom file-label">＋ 選擇照片</label>
+        <input id="fileInput" type="file" accept="image/*" multiple />
+        <button id="uploadBtn">上傳分享幸福</button>
+    </div>
     <div id="uploadStatus" class="status"></div>
   </div>
 
   <div class="card">
-    <h3 id="previewTitle" style="text-align: center; color: var(--gold-color); margin-top: 0;">最新動態</h3>
-    <div id="gallery" class="gallery"></div>
+    <h3 id="previewTitle" style="text-align: center; color: var(--champagne-gold); font-size: 1rem; margin-top: 0;">LATEST MOMENTS</h3>
     
-    <button id="viewAllBtn" class="btn-custom" style="margin-top: 30px;">瀏覽所有相簿照片</button>
-
-    <div id="allPhotosSection">
-      <h3 style="text-align: center; color: var(--gold-color); margin-top: 0;">婚禮相簿全集</h3>
-      <div id="fullGallery" class="gallery"></div>
-      <button id="backBtn" class="btn-custom" style="background: transparent; color: var(--gold-color); margin-top: 40px;">返回上傳頁面</button>
+    <div id="gallery" class="gallery-preview"></div>
+    
+    <div class="btn-container">
+        <button id="viewAllBtn" class="btn-custom" style="margin-top: 20px;">瀏覽所有照片</button>
     </div>
 
-    <p id="emptyMsg" style="text-align:center; color:#666; display:none; font-style: italic;">尚未有照片上傳</p>
+    <div id="allPhotosSection">
+      <h3 style="text-align: center; color: var(--champagne-gold); font-size: 1rem;">ALL PHOTOS</h3>
+      <div id="fullGallery" class="gallery-full"></div>
+      <div class="btn-container">
+          <button id="backBtn" class="btn-custom" style="background: transparent; color: var(--champagne-gold); margin-top: 30px;">返回上傳</button>
+      </div>
+    </div>
+
+    <p id="emptyMsg" style="text-align:center; color:#555; display:none; font-size: 13px;">尚未有照片</p>
   </div>
 
   <div id="previewOverlay">
@@ -176,7 +201,6 @@
   </div>
 
   <script type="module">
-    // (此處保留之前的 Firebase 與 Cloudinary 邏輯，僅需更新部分 UI 控制代碼)
     const CLOUD_NAME    = "dclcbrfs8"; 
     const UPLOAD_PRESET = "wedding-photos"; 
 
@@ -227,7 +251,7 @@
     });
 
     function getDisplayUrl(url) {
-      return url.replace('/upload/', '/upload/c_scale,w_800,q_auto,f_auto/');
+      return url.replace('/upload/', '/upload/c_fill,h_600,w_600,q_auto,f_auto/');
     }
 
     async function loadGallery(isFull = false) {
@@ -248,9 +272,9 @@
           const div = document.createElement("div");
           div.className = "photo-item";
           div.innerHTML = `
-            <img src="${getDisplayUrl(data.url)}" onclick="showPreview('${getDisplayUrl(data.url)}')">
+            <img src="${getDisplayUrl(data.url)}" onclick="showPreview('${data.url.replace('/upload/', '/upload/q_auto,f_auto/')}')">
             <div class="photo-buttons">
-              <button onclick="downloadImage('${data.url}', 'Wedding_${data.publicId}.jpg')">下載</button>
+              <button onclick="downloadImage('${data.url}', 'Wedding.jpg')">下載</button>
               ${currentUser && data.ownerId === currentUser.uid ? `<button class="btn-danger" onclick="deletePhoto('${docSnap.id}')">刪除</button>` : ''}
             </div>
           `;
