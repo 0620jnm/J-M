@@ -96,10 +96,10 @@
       gap: 10px; margin: 15px 0;
     }
 
-    .photo-item { border-radius: 12px; overflow: hidden; position: relative; background: #eee; }
+    .photo-item { border-radius: 12px; overflow: hidden; position: relative; background: rgba(255,255,255,0.3); }
     .photo-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; cursor: pointer; display: block; }
 
-    .photo-buttons { display: flex; gap: 4px; padding: 5px; justify-content: center; background: rgba(255,255,255,0.3); }
+    .photo-buttons { display: flex; gap: 4px; padding: 5px; justify-content: center; }
     .photo-buttons button { 
       padding: 5px; font-size: 10px; margin: 0; 
       background: var(--rose-gold); max-width: 50px; 
@@ -157,6 +157,7 @@
   <div id="previewOverlay"><img id="previewImage" src=""></div>
 
   <script type="module">
+    // Firebase & Cloudinary 設定
     const CLOUD_NAME    = "dclcbrfs8"; 
     const UPLOAD_PRESET = "wedding-photos"; 
 
@@ -225,46 +226,55 @@
       } catch (e) { console.error(e); }
     }
 
-    // 修復後的批量上傳邏輯
+    // --- 重寫批量上傳邏輯 ---
     uploadBtn.onclick = async () => {
       const files = Array.from(fileInput.files);
       if (!files.length) { alert("請先選擇照片"); return; }
       
       uploadBtn.disabled = true;
       const total = files.length;
-      
-      try {
-        for (let i = 0; i < total; i++) {
-          uploadStatus.textContent = `上傳中 (${i + 1}/${total})...`;
-          
+      let successCount = 0;
+
+      for (let i = 0; i < total; i++) {
+        uploadStatus.textContent = `上傳中 (${i + 1}/${total})...`;
+        
+        try {
           const formData = new FormData();
           formData.append("file", files[i]);
           formData.append("upload_preset", UPLOAD_PRESET);
-          
-          // 1. 先等待 Cloudinary 上傳完成
-          const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
-          const result = await res.json();
 
-          if (result.secure_url) {
-            // 2. 確保 Firebase 寫入完成才跑下一張
-            await addDoc(photosCol, { 
-              publicId: result.public_id, 
-              url: result.secure_url, 
-              ownerId: currentUser.uid, 
-              createdAt: serverTimestamp() 
+          // 1. 等待 Cloudinary 上傳
+          const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+            method: "POST",
+            body: formData
+          });
+          const cloudData = await cloudRes.json();
+
+          if (cloudData.secure_url) {
+            // 2. 等待 Firestore 寫入成功
+            await addDoc(photosCol, {
+              publicId: cloudData.public_id,
+              url: cloudData.secure_url,
+              ownerId: currentUser.uid,
+              createdAt: serverTimestamp()
             });
+            successCount++;
           }
+        } catch (err) {
+          console.error("張數 " + (i + 1) + " 出錯:", err);
         }
-        uploadStatus.textContent = "上傳成功！✨";
-        fileInput.value = "";
-      } catch (err) {
-        console.error(err);
-        uploadStatus.textContent = "部分上傳失敗，請重試。";
-      } finally {
-        uploadBtn.disabled = false;
-        setTimeout(() => { uploadStatus.textContent = ""; }, 4000);
-        await loadGallery(false); // 上傳完畢重新載入
       }
+
+      if (successCount === total) {
+        uploadStatus.textContent = "上傳成功！✨";
+      } else {
+        uploadStatus.textContent = `完成，但有 ${total - successCount} 張失敗。`;
+      }
+
+      fileInput.value = "";
+      uploadBtn.disabled = false;
+      setTimeout(() => { uploadStatus.textContent = ""; }, 4000);
+      await loadGallery(false);
     };
 
     window.showPreview = (url) => {
@@ -274,14 +284,12 @@
     document.getElementById("previewOverlay").onclick = function() { this.style.display = "none"; };
 
     window.downloadImage = async (url) => {
-      try {
-        const res = await fetch(url, { mode: 'cors' });
-        const blob = await res.blob();
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = "WeddingPhoto.jpg";
-        a.click();
-      } catch(e) { alert("下載出錯，請長按圖片保存"); }
+      const res = await fetch(url, { mode: 'cors' });
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = "WeddingPhoto.jpg";
+      a.click();
     };
 
     window.deletePhoto = async (id) => {
