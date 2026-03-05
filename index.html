@@ -152,8 +152,12 @@
   <div id="previewOverlay"><img id="previewImage" src=""></div>
 
   <script type="module">
-    const CLOUD_NAME = "dclcbrfs8"; 
-    const UPLOAD_PRESET = "wedding-photos"; 
+    // ===== Cloudinary 設定 =====
+    const CLOUD_NAME    = "dc1cbrfs8";        // 你的 cloud name
+    const UPLOAD_PRESET = "wedding-photos"; // unsigned upload preset 名稱
+    const FOLDER        = "wedding-photos";   // 資料夾名稱
+
+    // ===== Firebase 設定 =====
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc, doc } 
@@ -324,3 +328,4 @@
   </script>
 </body>
 </html>
+
