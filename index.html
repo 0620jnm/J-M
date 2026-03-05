@@ -4,95 +4,99 @@
   <meta charset="UTF-8" />
   <title>Jay & Michelle Wedding Photos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #a78b71;
-      --secondary-color: #e8dcd4;
-      --accent-color: #8da399;
-      --bg-color: #f9f7f5;
-      --text-color: #5a4a42;
+      --bg-dark: #1a1a1a;        /* 深色背景 */
+      --card-bg: #262626;        /* 卡片深灰 */
+      --gold-color: #d4af37;     /* 經典金 */
+      --gold-light: #f1d592;     /* 亮金 */
+      --text-main: #e0e0e0;      /* 主文字色 */
     }
 
+    /* 淡入效果 */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
+    * {
+      box-sizing: border-box;
+      font-family: 'Noto Serif TC', serif; /* 統一字體 */
+    }
+
     body {
-      font-family: 'Noto Serif TC', serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
       max-width: 900px;
       margin: 0 auto;
-      padding: 24px 16px;
-      background: var(--bg-color);
-      color: var(--text-color);
-      line-height: 1.6;
-      opacity: 0;
+      padding: 30px 16px;
       animation: fadeInUp 1.2s ease-out forwards;
     }
 
     h1 { 
       text-align: center; 
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      color: var(--primary-color);
+      color: var(--gold-color);
+      font-size: 2.2rem;
       margin-bottom: 8px;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
     }
     
     .subtitle {
       text-align: center;
-      font-size: 0.9rem;
-      color: #9e918a;
+      font-size: 1rem;
+      color: var(--gold-light);
       margin-bottom: 40px;
-      letter-spacing: 4px;
+      letter-spacing: 5px;
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
+      background: var(--card-bg);
+      border-radius: 15px;
       padding: 30px;
       margin-bottom: 30px;
-      box-shadow: 0 10px 30px rgba(167, 139, 113, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      border: 1.5px solid var(--gold-color); /* 金色外框 */
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       animation: fadeInUp 1s ease-out 0.3s backwards;
     }
 
-    .upload-area { text-align: center; border: 2px dashed var(--secondary-color); }
-    
-    /* 大按鈕樣式 */
-    .btn-large {
-      display: block;
-      width: 80%;
-      max-width: 300px;
-      margin: 20px auto;
-      padding: 16px 20px;
-      font-size: 18px;
+    /* 統一按鈕樣式 */
+    .btn-custom, button {
+      display: inline-block;
+      width: 100%;
+      max-width: 280px;
+      padding: 14px 20px;
+      font-size: 16px;
       font-weight: 700;
-      text-align: center;
-      background: linear-gradient(135deg, #a78b71 0%, #8d7661 100%);
-      color: white;
-      border-radius: 50px;
-      text-decoration: none;
-      box-shadow: 0 8px 20px rgba(167, 139, 113, 0.3);
-      transition: all 0.3s ease;
-    }
-
-    .btn-large:active { transform: scale(0.95); opacity: 0.9; }
-
-    button {
-      border: none;
-      border-radius: 50px;
-      padding: 12px 28px;
-      font-family: 'Noto Serif TC', serif;
+      color: var(--bg-dark);
+      background: var(--gold-color);
+      border: 2px solid var(--gold-color);
+      border-radius: 8px;
       cursor: pointer;
+      text-align: center;
       transition: all 0.3s ease;
+      margin: 10px auto;
+      text-decoration: none;
     }
 
-    .btn-primary { background: var(--primary-color); color: #fff; }
-    .btn-download { background: var(--accent-color); color: #fff; padding: 6px 14px; font-size: 12px; }
-    .btn-danger { background: #f4b0b0; color: #fff; padding: 6px 14px; font-size: 12px; }
+    /* 按鈕點擊效果 */
+    .btn-custom:active, button:active {
+      transform: scale(0.96);
+      box-shadow: 0 0 15px var(--gold-color);
+    }
+
+    .btn-custom:hover, button:hover {
+      background: var(--gold-light);
+      border-color: var(--gold-light);
+    }
+
+    /* 隱藏預設 input file，用 label 做成金色按鈕 */
+    #fileInput { display: none; }
+    .file-label {
+      background: transparent;
+      color: var(--gold-color);
+      margin-bottom: 20px;
+    }
 
     .gallery {
       display: grid;
@@ -101,62 +105,70 @@
     }
 
     .photo-item {
-      background: #fff;
-      border-radius: 15px;
-      overflow: hidden;
-      padding: 10px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      background: #000;
+      border-radius: 10px;
+      padding: 8px;
+      border: 1px solid #444;
       animation: fadeInUp 0.8s ease-out;
     }
 
     .photo-item img {
       width: 100%;
-      height: 300px;
+      height: 280px;
       object-fit: cover;
-      border-radius: 10px;
+      border-radius: 6px;
       cursor: zoom-in;
     }
 
-    .photo-buttons { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
-    .status { font-size: 14px; color: var(--primary-color); text-align: center; margin-top: 15px; min-height: 20px; }
+    /* 照片下方的小按鈕也要統一 */
+    .photo-buttons { display: flex; gap: 8px; margin-top: 10px; }
+    .photo-buttons button {
+      padding: 8px;
+      font-size: 13px;
+      flex: 1;
+    }
+    .btn-danger { background: #8b0000; border-color: #8b0000; color: white; }
 
-    /* 預覽與全相簿模式控制 */
+    .status { font-size: 14px; color: var(--gold-light); text-align: center; margin-top: 10px; min-height: 20px; }
+
+    /* 全相簿切換控制 */
     #allPhotosSection { display: none; }
     .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn { display: none; }
     .viewing-all #allPhotosSection { display: block; }
 
     #previewOverlay {
-      position: fixed; inset: 0; background: rgba(45, 38, 34, 0.95);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.95);
       display: none; align-items: center; justify-content: center; z-index: 9999;
     }
-    #previewImage { max-width: 90%; max-height: 90%; border: 5px solid #fff; border-radius: 4px; }
+    #previewImage { max-width: 95%; max-height: 95%; border: 3px solid var(--gold-color); }
   </style>
 </head>
 <body>
 
-  <h1>Jay & Michelle</h1>
-  <div class="subtitle">WEDDING DAY</div>
+  <h1>JAY & MICHELLE</h1>
+  <div class="subtitle">WEDDING GALLERY</div>
 
-  <div id="mainUploadSection" class="card upload-area">
+  <div id="mainUploadSection" class="card" style="text-align: center;">
+    <label for="fileInput" class="btn-custom file-label">＋ 選擇照片</label>
     <input id="fileInput" type="file" accept="image/*" multiple />
-    <br />
-    <button id="uploadBtn" class="btn-primary">分享我們的喜悅</button>
+    
+    <button id="uploadBtn">上傳照片分享幸福</button>
     <div id="uploadStatus" class="status"></div>
   </div>
 
   <div class="card">
-    <h3 id="previewTitle" style="text-align: center; color: var(--primary-color); margin-top: 0; font-weight: 500;">最新幸福瞬間</h3>
+    <h3 id="previewTitle" style="text-align: center; color: var(--gold-color); margin-top: 0;">最新動態</h3>
     <div id="gallery" class="gallery"></div>
     
-    <button id="viewAllBtn" class="btn-large">瀏覽 & 下載所有照片</button>
+    <button id="viewAllBtn" class="btn-custom" style="margin-top: 30px;">瀏覽所有相簿照片</button>
 
     <div id="allPhotosSection">
-      <h3 style="text-align: center; color: var(--primary-color); margin-top: 0;">所有賓客的祝福</h3>
+      <h3 style="text-align: center; color: var(--gold-color); margin-top: 0;">婚禮相簿全集</h3>
       <div id="fullGallery" class="gallery"></div>
-      <button id="backBtn" class="btn-large" style="background: #9e918a; margin-top: 40px;">回上傳頁面</button>
+      <button id="backBtn" class="btn-custom" style="background: transparent; color: var(--gold-color); margin-top: 40px;">返回上傳頁面</button>
     </div>
 
-    <p id="emptyMsg" style="text-align:center; color:#bbb; display:none; font-style: italic;">期待您的第一張照片...</p>
+    <p id="emptyMsg" style="text-align:center; color:#666; display:none; font-style: italic;">尚未有照片上傳</p>
   </div>
 
   <div id="previewOverlay">
@@ -164,12 +176,12 @@
   </div>
 
   <script type="module">
-    // Firebase & Cloudinary 設定
+    // (此處保留之前的 Firebase 與 Cloudinary 邏輯，僅需更新部分 UI 控制代碼)
     const CLOUD_NAME    = "dclcbrfs8"; 
     const UPLOAD_PRESET = "wedding-photos"; 
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc } 
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc, doc } 
       from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } 
       from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
@@ -198,15 +210,14 @@
 
     let currentUser = null;
 
-    // 介面切換邏輯
     viewAllBtn.onclick = () => {
       document.body.classList.add('viewing-all');
-      loadGallery(true); // 載入全部
+      loadGallery(true);
       window.scrollTo(0, 0);
     };
     backBtn.onclick = () => {
       document.body.classList.remove('viewing-all');
-      loadGallery(false); // 回到三張
+      loadGallery(false);
       window.scrollTo(0, 0);
     };
 
@@ -217,17 +228,6 @@
 
     function getDisplayUrl(url) {
       return url.replace('/upload/', '/upload/c_scale,w_800,q_auto,f_auto/');
-    }
-
-    async function downloadImage(url, filename) {
-      try {
-        const res = await fetch(url, { mode: 'cors' });
-        const blob = await res.blob();
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        a.click();
-      } catch (e) { alert("下載失敗，請長按圖片儲存。"); }
     }
 
     async function loadGallery(isFull = false) {
@@ -250,7 +250,7 @@
           div.innerHTML = `
             <img src="${getDisplayUrl(data.url)}" onclick="showPreview('${getDisplayUrl(data.url)}')">
             <div class="photo-buttons">
-              <button class="btn-download" onclick="downloadImage('${data.url}', 'Wedding_${data.publicId}.jpg')">下載原圖</button>
+              <button onclick="downloadImage('${data.url}', 'Wedding_${data.publicId}.jpg')">下載</button>
               ${currentUser && data.ownerId === currentUser.uid ? `<button class="btn-danger" onclick="deletePhoto('${docSnap.id}')">刪除</button>` : ''}
             </div>
           `;
@@ -259,7 +259,6 @@
       } catch (e) { console.error(e); }
     }
 
-    // 全域函式處理動態產生的 HTML
     window.showPreview = (url) => {
       const overlay = document.getElementById("previewOverlay");
       const img = document.getElementById("previewImage");
@@ -269,21 +268,27 @@
 
     document.getElementById("previewOverlay").onclick = function() { this.style.display = "none"; };
 
-    window.downloadImage = downloadImage;
+    window.downloadImage = async (url, filename) => {
+      const res = await fetch(url, { mode: 'cors' });
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    };
 
     window.deletePhoto = async (id) => {
-      if (confirm("要刪除照片嗎？")) {
+      if (confirm("確定刪除？")) {
         await deleteDoc(doc(db, "wedding_photos", id));
         loadGallery(document.body.classList.contains('viewing-all'));
       }
     };
 
-    // 上傳邏輯
     uploadBtn.onclick = async () => {
       const files = Array.from(fileInput.files);
-      if (!files.length || !currentUser) return;
+      if (!files.length) return;
       uploadBtn.disabled = true;
-      document.getElementById("uploadStatus").textContent = "正在傳送幸福...";
+      document.getElementById("uploadStatus").textContent = "正在傳送...";
 
       for (const file of files) {
         const formData = new FormData();
@@ -293,7 +298,7 @@
         const result = await res.json();
         await addDoc(photosCol, { publicId: result.public_id, url: result.secure_url, ownerId: currentUser.uid, createdAt: serverTimestamp() });
       }
-      document.getElementById("uploadStatus").textContent = "上傳成功！";
+      document.getElementById("uploadStatus").textContent = "完成！";
       fileInput.value = "";
       uploadBtn.disabled = false;
       loadGallery(false);
