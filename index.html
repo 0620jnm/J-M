@@ -13,7 +13,6 @@
       --text-dark: #5a4d4a;
     }
 
-    /* 1. 不規則漸層背景 (Mesh Gradient) */
     body {
       margin: 0;
       min-height: 100vh;
@@ -84,7 +83,6 @@
 
     .btn-custom:active { transform: scale(0.96); }
 
-    /* 批量上傳：隱藏原按鈕 */
     #fileInput { display: none; }
     .file-label {
       background: white !important;
@@ -93,37 +91,34 @@
       box-shadow: none !important;
     }
 
-    /* 首頁最新三張：正方形 */
     .gallery-preview {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 10px; margin: 15px 0;
     }
 
-    .photo-item { border-radius: 12px; overflow: hidden; position: relative; }
-    .photo-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; cursor: pointer; }
+    .photo-item { border-radius: 12px; overflow: hidden; position: relative; background: #eee; }
+    .photo-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; cursor: pointer; display: block; }
 
-    /* 下載與刪除小按鈕 */
-    .photo-buttons { display: flex; gap: 4px; padding: 5px; justify-content: center; }
+    .photo-buttons { display: flex; gap: 4px; padding: 5px; justify-content: center; background: rgba(255,255,255,0.3); }
     .photo-buttons button { 
       padding: 5px; font-size: 10px; margin: 0; 
-      background: rgba(197, 163, 145, 0.8); max-width: 50px; 
+      background: var(--rose-gold); max-width: 50px; 
     }
-    .btn-danger { background: rgba(229, 154, 154, 0.8) !important; }
+    .btn-danger { background: #e59a9a !important; }
 
-    /* 全相簿：兩列 */
     .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 
-    .status { font-size: 14px; color: var(--rose-gold); text-align: center; margin-top: 10px; font-weight: 700; }
+    .status { font-size: 14px; color: var(--rose-gold); text-align: center; margin-top: 10px; font-weight: 700; min-height: 1.2em; }
 
     #allPhotosSection { display: none; }
     .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn, .viewing-all #gallery { display: none; }
     .viewing-all #allPhotosSection { display: block; }
 
     #previewOverlay {
-      position: fixed; inset: 0; background: rgba(255,255,255,0.9);
+      position: fixed; inset: 0; background: rgba(255,255,255,0.95);
       display: none; align-items: center; justify-content: center; z-index: 9999;
     }
-    #previewImage { max-width: 90%; max-height: 80%; border-radius: 15px; }
+    #previewImage { max-width: 90%; max-height: 80%; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body>
@@ -134,18 +129,16 @@
 
     <div id="mainUploadSection" class="card">
       <div class="btn-container">
-          <label for="fileInput" class="btn-custom file-label">＋ 批量選擇照片</label>
+          <label for="fileInput" class="btn-custom file-label">＋ 批量選擇</label>
           <input id="fileInput" type="file" accept="image/*" multiple />
-          <button id="uploadBtn">開始傳送幸福</button>
+          <button id="uploadBtn">開始上傳</button>
       </div>
       <div id="uploadStatus" class="status"></div>
     </div>
 
     <div class="card">
       <h3 id="previewTitle" style="text-align: center; color: var(--rose-gold); font-size: 1rem; margin-top: 0; letter-spacing: 2px;">LATEST</h3>
-      
       <div id="gallery" class="gallery-preview"></div>
-      
       <div class="btn-container">
           <button id="viewAllBtn" class="btn-custom">瀏覽所有照片</button>
       </div>
@@ -157,7 +150,6 @@
             <button id="backBtn" class="btn-custom file-label">返回</button>
         </div>
       </div>
-
       <p id="emptyMsg" style="text-align:center; color:#b5a6a3; display:none;">尚無照片</p>
     </div>
   </div>
@@ -165,7 +157,6 @@
   <div id="previewOverlay"><img id="previewImage" src=""></div>
 
   <script type="module">
-    // Firebase 設定 (維持不變)
     const CLOUD_NAME    = "dclcbrfs8"; 
     const UPLOAD_PRESET = "wedding-photos"; 
 
@@ -234,7 +225,7 @@
       } catch (e) { console.error(e); }
     }
 
-    // 批量上傳功能邏輯
+    // 修復後的批量上傳邏輯
     uploadBtn.onclick = async () => {
       const files = Array.from(fileInput.files);
       if (!files.length) { alert("請先選擇照片"); return; }
@@ -242,25 +233,38 @@
       uploadBtn.disabled = true;
       const total = files.length;
       
-      for (let i = 0; i < total; i++) {
-        uploadStatus.textContent = `上傳中 (${i + 1}/${total})...`;
-        try {
+      try {
+        for (let i = 0; i < total; i++) {
+          uploadStatus.textContent = `上傳中 (${i + 1}/${total})...`;
+          
           const formData = new FormData();
           formData.append("file", files[i]);
           formData.append("upload_preset", UPLOAD_PRESET);
+          
+          // 1. 先等待 Cloudinary 上傳完成
           const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
           const result = await res.json();
-          await addDoc(photosCol, { publicId: result.public_id, url: result.secure_url, ownerId: currentUser.uid, createdAt: serverTimestamp() });
-        } catch (err) {
-          console.error("第 " + (i+1) + " 張上傳失敗");
+
+          if (result.secure_url) {
+            // 2. 確保 Firebase 寫入完成才跑下一張
+            await addDoc(photosCol, { 
+              publicId: result.public_id, 
+              url: result.secure_url, 
+              ownerId: currentUser.uid, 
+              createdAt: serverTimestamp() 
+            });
+          }
         }
+        uploadStatus.textContent = "上傳成功！✨";
+        fileInput.value = "";
+      } catch (err) {
+        console.error(err);
+        uploadStatus.textContent = "部分上傳失敗，請重試。";
+      } finally {
+        uploadBtn.disabled = false;
+        setTimeout(() => { uploadStatus.textContent = ""; }, 4000);
+        await loadGallery(false); // 上傳完畢重新載入
       }
-      
-      uploadStatus.textContent = "傳送成功！✨";
-      fileInput.value = "";
-      uploadBtn.disabled = false;
-      setTimeout(() => { uploadStatus.textContent = ""; }, 3000);
-      loadGallery(false);
     };
 
     window.showPreview = (url) => {
@@ -270,12 +274,14 @@
     document.getElementById("previewOverlay").onclick = function() { this.style.display = "none"; };
 
     window.downloadImage = async (url) => {
-      const res = await fetch(url, { mode: 'cors' });
-      const blob = await res.blob();
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = "WeddingPhoto.jpg";
-      a.click();
+      try {
+        const res = await fetch(url, { mode: 'cors' });
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = "WeddingPhoto.jpg";
+        a.click();
+      } catch(e) { alert("下載出錯，請長按圖片保存"); }
     };
 
     window.deletePhoto = async (id) => {
