@@ -11,7 +11,7 @@
       --champagne: #f7e7ce;
       --soft-pink: #f5e3e0;
       --text-dark: #5a4d4a;
-      --grey-remove: rgba(0, 0, 0, 0.4); /* 1. 灰色小叉叉 */
+      --grey-remove: rgba(0, 0, 0, 0.4);
     }
 
     body {
@@ -29,12 +29,7 @@
       display: flex; flex-direction: column; align-items: center; padding: 40px 16px;
     }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .container { width: 100%; max-width: 500px; animation: fadeInUp 1s ease-out; }
+    .container { width: 100%; max-width: 500px; }
 
     h1 { text-align: center; color: var(--rose-gold); font-family: 'Dancing Script', cursive; font-size: 3.2rem; margin: 0; }
     .subtitle { text-align: center; font-size: 0.85rem; color: var(--rose-gold); margin-bottom: 35px; letter-spacing: 5px; font-weight: 700; }
@@ -57,8 +52,6 @@
       margin: 8px 0; box-shadow: 0 5px 15px rgba(197, 163, 145, 0.2);
     }
 
-    .btn-custom:active { transform: scale(0.96); }
-
     #fileInput { display: none; }
     .file-label {
       background: white !important; color: var(--rose-gold) !important;
@@ -78,53 +71,37 @@
       border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    /* 1. 灰色小 X 刪除按鈕 (優化外觀) */
     .remove-btn {
       position: absolute; top: -8px; right: -8px;
-      background: white; /* 底色用白色突出 X */
-      color: var(--grey-remove); /* X 是灰色 */
-      border: 1px solid rgba(0,0,0,0.1); /* 超淡邊框 */
+      background: white; color: var(--grey-remove);
+      border: 1px solid rgba(0,0,0,0.1);
       border-radius: 50%; width: 26px; height: 26px;
       font-size: 14px; font-weight: bold;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      z-index: 100; transition: all 0.2s ease;
-    }
-    .remove-btn:hover, .remove-btn:active {
-      color: #333; /* 觸摸時變深灰 */
-      transform: scale(1.1);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+      z-index: 100;
     }
 
-    /* 2. 進度條 CSS */
+    /* 進度條 */
     .progress-container {
       width: 100%; max-width: 240px;
       height: 6px; background: rgba(0,0,0,0.05);
       border-radius: 10px; margin-top: 10px;
-      overflow: hidden; display: none; /* 初始隱藏 */
+      overflow: hidden; display: none;
     }
     .progress-bar {
       height: 100%; background: linear-gradient(90deg, var(--champagne), var(--rose-gold));
-      width: 0%; /* 動態控制寬度 */
-      transition: width 0.4s ease; /* 3. 平滑動畫 */
-      border-radius: 10px;
+      width: 0%; transition: width 0.4s ease; border-radius: 10px;
     }
 
-    /* 3. 上傳動畫與勾勾 ✅ */
+    /* 動畫圖示 */
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    @keyframes checkFadeIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
-
     .loader-icon {
       display: inline-block; width: 14px; height: 14px;
       border: 2px solid rgba(197, 163, 145, 0.3);
       border-top-color: var(--rose-gold);
       border-radius: 50%; animation: spin 0.8s linear infinite;
       margin-right: 8px; vertical-align: middle;
-    }
-    .check-icon {
-      display: inline-block; color: #67c23a; /* 成功綠 */
-      font-size: 16px; margin-right: 8px;
-      animation: checkFadeIn 0.5s ease-out;
     }
 
     /* 照片展示格線 */
@@ -192,14 +169,13 @@
   <div id="previewOverlay"><img id="previewImage" src=""></div>
 
   <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+    // 核心設定 - 請確認這些值
     const CLOUD_NAME = "dclcbrfs8"; 
     const UPLOAD_PRESET = "wedding-photos"; 
-
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc, doc } 
-      from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged, signInAnonymously } 
-      from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBzK8lLQTr_Z3dn-TNOUslX1sAw3PV9TY0",
@@ -218,76 +194,48 @@
 
     const gallery = document.getElementById("gallery");
     const fullGallery = document.getElementById("fullGallery");
-    const viewAllBtn = document.getElementById("viewAllBtn");
-    const backBtn = document.getElementById("backBtn");
     const uploadBtn = document.getElementById("uploadBtn");
     const fileInput = document.getElementById("fileInput");
     const uploadStatus = document.getElementById("uploadStatus");
     const selectionInfo = document.getElementById("selectionInfo");
     const previewContainer = document.getElementById("previewContainer");
-    
-    // 進度條與動畫元素
-    const progressContainer = document.getElementById("progressContainer");
     const progressBar = document.getElementById("progressBar");
+    const progressContainer = document.getElementById("progressContainer");
 
     let currentUser = null;
-    let selectedFiles = []; 
+    let selectedFiles = [];
 
     onAuthStateChanged(auth, async (user) => {
-      if (user) { currentUser = user; await loadGallery(false); }
-      else { await signInAnonymously(auth); }
+      if (user) { 
+        currentUser = user; 
+        console.log("Auth Success:", user.uid);
+        await loadGallery(false); 
+      } else { 
+        signInAnonymously(auth).catch(e => console.error("Auth Error:", e)); 
+      }
     });
 
-    viewAllBtn.onclick = () => { document.body.classList.add('viewing-all'); loadGallery(true); window.scrollTo(0,0); };
-    backBtn.onclick = () => { document.body.classList.remove('viewing-all'); loadGallery(false); window.scrollTo(0,0); };
-
-    fileInput.onchange = (e) => {
-      const newFiles = Array.from(e.target.files);
-      selectedFiles = [...selectedFiles, ...newFiles];
-      renderPreviews();
-      fileInput.value = ""; 
-    };
-
-    function renderPreviews() {
-      previewContainer.innerHTML = "";
-      if (selectedFiles.length > 0) {
-        selectionInfo.style.display = "block";
-        selectionInfo.textContent = `已選取 ${selectedFiles.length} 張照片`;
-        
-        selectedFiles.forEach((file, index) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const wrapper = document.createElement("div");
-            wrapper.className = "preview-item";
-            wrapper.innerHTML = `
-              <img src="${e.target.result}" class="preview-thumb">
-              <div class="remove-btn" onclick="event.stopPropagation(); window.removeSelected(${index})">✕</div>
-            `;
-            previewContainer.appendChild(wrapper);
-          };
-          reader.readAsDataURL(file);
-        });
-      } else { selectionInfo.style.display = "none"; }
-    }
-
-    window.removeSelected = (index) => { selectedFiles.splice(index, 1); renderPreviews(); };
-
-    function getDisplayUrl(url) { return url.replace('/upload/', '/upload/c_fill,h_600,w_600,q_auto,f_auto/'); }
-
+    // 載入相簿功能
     async function loadGallery(isFull = false) {
       const targetGallery = isFull ? fullGallery : gallery;
-      targetGallery.innerHTML = "";
       try {
         const q = isFull ? query(photosCol, orderBy("createdAt", "desc")) : query(photosCol, orderBy("createdAt", "desc"), limit(3));
         const snap = await getDocs(q);
-        if (snap.empty) { document.getElementById("emptyMsg").style.display = "block"; return; }
+        
+        targetGallery.innerHTML = "";
+        if (snap.empty) {
+          document.getElementById("emptyMsg").style.display = "block";
+          return;
+        }
         document.getElementById("emptyMsg").style.display = "none";
+        
         snap.forEach(docSnap => {
           const data = docSnap.data();
           const div = document.createElement("div");
           div.className = "photo-item";
+          const thumbUrl = data.url.replace('/upload/', '/upload/c_fill,h_400,w_400,q_auto,f_auto/');
           div.innerHTML = `
-            <img src="${getDisplayUrl(data.url)}" onclick="showPreview('${data.url.replace('/upload/', '/upload/q_auto,f_auto/')}')">
+            <img src="${thumbUrl}" onclick="showPreview('${data.url}')">
             <div class="photo-buttons">
               <button onclick="downloadImage('${data.url}')">保存</button>
               ${currentUser && data.ownerId === currentUser.uid ? `<button class="btn-danger" onclick="deletePhoto('${docSnap.id}')">刪除</button>` : ''}
@@ -295,78 +243,88 @@
           `;
           targetGallery.appendChild(div);
         });
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error("Load Error:", e);
+      }
     }
 
-    // --- 核心：批量上傳 (新增進度條與動畫邏輯) ---
+    // 檔案選擇預覽
+    fileInput.onchange = (e) => {
+      const newFiles = Array.from(e.target.files);
+      selectedFiles = [...selectedFiles, ...newFiles];
+      renderPreviews();
+      fileInput.value = "";
+    };
+
+    function renderPreviews() {
+      previewContainer.innerHTML = "";
+      if (selectedFiles.length > 0) {
+        selectionInfo.style.display = "block";
+        selectionInfo.textContent = `已選取 ${selectedFiles.length} 張照片`;
+        selectedFiles.forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const wrapper = document.createElement("div");
+            wrapper.className = "preview-item";
+            wrapper.innerHTML = `<img src="${e.target.result}" class="preview-thumb"><div class="remove-btn" onclick="removeSelected(${index})">✕</div>`;
+            previewContainer.appendChild(wrapper);
+          };
+          reader.readAsDataURL(file);
+        });
+      } else { selectionInfo.style.display = "none"; }
+    }
+
+    window.removeSelected = (i) => { selectedFiles.splice(i, 1); renderPreviews(); };
+
+    // 上傳邏輯
     uploadBtn.onclick = async () => {
       if (!selectedFiles.length) { alert("請先選擇照片"); return; }
       
       uploadBtn.disabled = true;
-      const total = selectedFiles.length;
-      let successCount = 0;
-
-      // 2. 顯示進度條並重設
       progressContainer.style.display = "block";
       progressBar.style.width = "0%";
-      uploadStatus.innerHTML = `<span class="loader-icon"></span>準備上傳...`;
+      let successCount = 0;
 
-      for (let i = 0; i < total; i++) {
-        // 更新狀態文字 (帶 Loader)
-        uploadStatus.innerHTML = `<span class="loader-icon"></span>正在傳送 (${i + 1} / ${total})...`;
-        
+      for (let i = 0; i < selectedFiles.length; i++) {
+        uploadStatus.innerHTML = `<span class="loader-icon"></span>正在傳送 (${i+1}/${selectedFiles.length})...`;
         try {
           const formData = new FormData();
           formData.append("file", selectedFiles[i]);
           formData.append("upload_preset", UPLOAD_PRESET);
 
           const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
+          if (!cloudRes.ok) throw new Error("Cloudinary Failed");
+          
           const cloudData = await cloudRes.json();
-
-          if (cloudData.secure_url) {
-            await addDoc(photosCol, {
-              publicId: cloudData.public_id,
-              url: cloudData.secure_url,
-              ownerId: currentUser.uid,
-              createdAt: serverTimestamp()
-            });
-            successCount++;
-          }
-        } catch (err) { console.error(err); }
-
-        // 3. 更新進度條長度 (平滑動畫)
-        const percent = ((i + 1) / total) * 100;
-        progressBar.style.width = `${percent}%`;
+          await addDoc(photosCol, {
+            url: cloudData.secure_url,
+            ownerId: currentUser.uid,
+            createdAt: serverTimestamp()
+          });
+          successCount++;
+          progressBar.style.width = `${((i + 1) / selectedFiles.length) * 100}%`;
+        } catch (err) {
+          console.error("Upload Single Error:", err);
+        }
       }
 
-      // 3. 上傳完成動畫
-      if (successCount === total) {
-        uploadStatus.innerHTML = `<span class="check-icon">✅</span>傳送成功！感謝您的祝福`;
-      } else {
-        uploadStatus.textContent = `完成，但有 ${total - successCount} 張失敗。`;
-      }
-      
-      // 清空暫存與預覽
+      uploadStatus.textContent = successCount > 0 ? "上傳成功！✨" : "上傳失敗，請檢查網路";
       selectedFiles = [];
-      previewContainer.innerHTML = "";
-      selectionInfo.style.display = "none";
-      
-      // 延遲隱藏進度條，讓動畫跑完
-      setTimeout(() => {
-        progressContainer.style.display = "none";
-        uploadStatus.textContent = "";
+      renderPreviews();
+      setTimeout(() => { 
+        progressContainer.style.display = "none"; 
+        uploadStatus.textContent = ""; 
         uploadBtn.disabled = false;
-      }, 4000);
-      
+      }, 3000);
       await loadGallery(false);
     };
 
+    // 其他功能
     window.showPreview = (url) => {
-      document.getElementById("previewImage").src = url;
+      document.getElementById("previewImage").src = url.replace('/upload/', '/upload/q_auto,f_auto/');
       document.getElementById("previewOverlay").style.display = "flex";
     };
     document.getElementById("previewOverlay").onclick = function() { this.style.display = "none"; };
-
     window.downloadImage = async (url) => {
       const res = await fetch(url, { mode: 'cors' });
       const blob = await res.blob();
@@ -374,13 +332,11 @@
       a.href = URL.createObjectURL(blob);
       a.download = "WeddingPhoto.jpg"; a.click();
     };
-
     window.deletePhoto = async (id) => {
-      if (confirm("要刪除嗎？")) {
-        await deleteDoc(doc(db, "wedding_photos", id));
-        loadGallery(document.body.classList.contains('viewing-all'));
-      }
+      if (confirm("要刪除嗎？")) { await deleteDoc(doc(db, "wedding_photos", id)); loadGallery(document.body.classList.contains('viewing-all')); }
     };
+    document.getElementById("viewAllBtn").onclick = () => { document.body.classList.add('viewing-all'); loadGallery(true); };
+    document.getElementById("backBtn").onclick = () => { document.body.classList.remove('viewing-all'); loadGallery(false); };
   </script>
 </body>
 </html>
