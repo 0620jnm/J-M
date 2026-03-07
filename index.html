@@ -25,7 +25,7 @@
     .preview-scroll.active { max-height: 110px; opacity: 1; padding: 10px 0; }
     .preview-item { position: relative; display: inline-block; flex-shrink: 0; width: 70px; height: 70px; background: #eee; border-radius: 8px; overflow: hidden; }
     .preview-thumb { width: 100%; height: 100%; object-fit: cover; }
-    .remove-btn { position: absolute; top: 2px; right: 2px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; color: #000; z-index: 10; }
+    .remove-btn { position: absolute; top: 2px; right: 2px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #000; z-index: 10; }
     .gallery-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
     .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 15px 0; }
     .photo-item { border-radius: 8px; overflow: hidden; background: #f0f0f0; position: relative; transition: background 0.3s; }
@@ -44,18 +44,15 @@
     #previewOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 10000; }
     #previewImage { max-width: 95%; max-height: 90%; object-fit: contain; }
     
-    /* 褐色多選強化樣式 */
-    .select-checkbox { position: absolute; top: 10px; left: 10px; width: 22px; height: 22px; accent-color: #fff; z-index: 10; display: none; cursor: pointer; }
-    .multi-select-active .select-checkbox { display: block; }
-    .multi-select-active .photo-item img { opacity: 0.8; filter: grayscale(30%); }
+    /* 多選強化樣式 */
+    .select-checkbox { position: absolute; top: 10px; left: 10px; width: 22px; height: 22px; accent-color: var(--rose-gold); z-index: 10; display: none; cursor: pointer; }
+    .multi-select-active .select-checkbox { display: block; border: 2px solid #fff; border-radius: 4px; }
     
-    /* 選中時的褐色反白效果 */
-    .photo-item.selected { background: var(--rose-gold); }
-    .photo-item.selected img { opacity: 0.4; transform: scale(0.92); }
+    /* 被勾選時的照片外觀：褐色底色、縮小、透明 */
+    .photo-item.selected { background-color: var(--rose-gold); }
+    .photo-item.selected img { opacity: 0.35; transform: scale(0.9); }
     
-    /* 選中時的勾選框發光提示 */
-    .select-checkbox:checked { filter: drop-shadow(0 0 5px rgba(255,255,255,0.8)); }
-
+    /* 勾選時的文字或徽章 */
     .badge { background: var(--rose-gold); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 5px; }
   </style>
 </head>
@@ -95,9 +92,9 @@
         </h3>
         
         <div class="btn-container" style="flex-direction: row; justify-content: center; gap: 8px;">
-          <button id="toggleSelectBtn" class="btn-custom btn-outline" style="width: 100px;">多選模式</button>
+          <button id="toggleSelectBtn" class="btn-custom btn-outline" style="width: 80px;">多選</button>
           <button id="selectAllBtn" class="btn-custom btn-outline" style="width: 80px; display: none;">全選</button>
-          <button id="downloadSelectedBtn" class="btn-custom" style="width: 100px; display: none;">下載</button>
+          <button id="downloadSelectedBtn" class="btn-custom" style="width: 80px; display: none;">下載</button>
         </div>
 
         <div id="fullGallery" class="gallery-full"></div>
@@ -116,31 +113,17 @@
     import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
-    const CLOUD_NAME = "dfcbhdvq8";
-    const UPLOAD_PRESET = "wedding-photos";
-    const firebaseConfig = { apiKey: "AIzaSyAUFF7GdX7fAtK_wK5-YAffirtap52UgCg", authDomain: "wedding-e6351.firebaseapp.com", projectId: "wedding-e6351", storageBucket: "wedding-e6351.firebasestorage.app", messagingSenderId: "382633819825", appId: "1:382633819825:web:b1dd463dd466752f78ec90" };
+    const config = { apiKey: "AIzaSyAUFF7GdX7fAtK_wK5-YAffirtap52UgCg", authDomain: "wedding-e6351.firebaseapp.com", projectId: "wedding-e6351", storageBucket: "wedding-e6351.firebasestorage.app", messagingSenderId: "382633819825", appId: "1:382633819825:web:b1dd463dd466752f78ec90" };
+    const app = initializeApp(config), db = getFirestore(app), auth = getAuth(app), photosCol = collection(db, "wedding_photos");
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    const photosCol = collection(db, "wedding_photos");
+    let currentUser = null, selectedFiles = [], isMultiSelectMode = false;
 
-    let currentUser = null;
-    let selectedFiles = []; 
-    let isMultiSelectMode = false;
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) { currentUser = user; loadGallery(false); }
-      else { signInAnonymously(auth); }
-    });
+    onAuthStateChanged(auth, async (u) => { if (u) { currentUser = u; loadGallery(false); } else { signInAnonymously(auth); } });
 
     document.getElementById("fileInput").onchange = (e) => {
       const files = Array.from(e.target.files);
       if (files.length > 0) document.getElementById("previewContainer").classList.add('active');
-      files.forEach(file => {
-        selectedFiles.push(file);
-        createCompressedPreview(file);
-      });
+      files.forEach(file => { selectedFiles.push(file); createCompressedPreview(file); });
       document.getElementById("selectionInfo").textContent = `已選取 ${selectedFiles.length} 張`;
       e.target.value = "";
     };
@@ -151,16 +134,14 @@
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const MAX_SIZE = 120;
-          let w = img.width, h = img.height;
-          if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } }
-          else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
+          const MAX = 120; let w = img.width, h = img.height;
+          if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
           canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          const wrapper = document.createElement("div");
-          wrapper.className = "preview-item fade-in";
-          wrapper.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.6)}" class="preview-thumb"><div class="remove-btn" onclick="removeFile(this)">✕</div>`;
-          document.getElementById("previewContainer").appendChild(wrapper);
+          const div = document.createElement("div");
+          div.className = "preview-item fade-in";
+          div.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.6)}" class="preview-thumb"><div class="remove-btn" onclick="removeFile(this)">✕</div>`;
+          document.getElementById("previewContainer").appendChild(div);
         };
         img.src = ev.target.result;
       };
@@ -168,43 +149,37 @@
     }
 
     window.removeFile = (btn) => {
-      const item = btn.parentElement;
-      const container = item.parentElement;
+      const item = btn.parentElement, container = item.parentElement;
       const index = Array.from(container.children).indexOf(item);
-      selectedFiles.splice(index, 1);
-      item.remove();
+      selectedFiles.splice(index, 1); item.remove();
       if (selectedFiles.length === 0) container.classList.remove('active');
       document.getElementById("selectionInfo").textContent = selectedFiles.length > 0 ? `已選取 ${selectedFiles.length} 張` : "";
     };
 
     document.getElementById("uploadBtn").onclick = async () => {
       if (!selectedFiles.length) return;
-      const btn = document.getElementById("uploadBtn");
-      const status = document.getElementById("uploadStatus");
-      const bar = document.getElementById("progressBar");
-      const wrap = document.getElementById("progressWrap");
+      const btn = document.getElementById("uploadBtn"), status = document.getElementById("uploadStatus");
+      const bar = document.getElementById("progressBar"), wrap = document.getElementById("progressWrap");
       btn.disabled = true; wrap.style.display = "block";
-      let successCount = 0;
+      let count = 0;
       for (let i = 0; i < selectedFiles.length; i++) {
         status.textContent = `上傳中 (${i+1}/${selectedFiles.length})...`;
         try {
-          const formData = new FormData();
-          formData.append("file", selectedFiles[i]);
-          formData.append("upload_preset", UPLOAD_PRESET);
-          const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, { method: "POST", body: formData });
+          const fd = new FormData();
+          fd.append("file", selectedFiles[i]);
+          fd.append("upload_preset", "wedding-photos");
+          const res = await fetch(`https://api.cloudinary.com/v1_1/dfcbhdvq8/upload`, { method: "POST", body: fd });
           const data = await res.json();
           if (data.secure_url) {
             await addDoc(photosCol, { url: data.secure_url, ownerId: currentUser.uid, createdAt: serverTimestamp() });
-            successCount++;
+            count++;
           }
         } catch (e) { console.error(e); }
         bar.style.width = `${((i+1)/selectedFiles.length)*100}%`;
       }
-      wrap.style.display = "none";
-      status.textContent = `成功上傳 ${successCount} 張照片！`;
-      selectedFiles = [];
-      const pc = document.getElementById("previewContainer");
-      pc.innerHTML = ""; pc.classList.remove('active');
+      wrap.style.display = "none"; status.textContent = `成功上傳 ${count} 張照片！`;
+      selectedFiles = []; document.getElementById("previewContainer").innerHTML = "";
+      document.getElementById("previewContainer").classList.remove('active');
       document.getElementById("selectionInfo").textContent = "";
       setTimeout(() => { status.textContent = ""; btn.disabled = false; }, 4000);
       loadGallery(false);
@@ -218,17 +193,17 @@
         const snap = await getDocs(q);
         if (snap.empty) { document.getElementById("emptyMsg").style.display = "block"; return; }
         document.getElementById("emptyMsg").style.display = "none";
-        snap.forEach((docSnap, index) => {
-          const data = docSnap.data();
+        snap.forEach((d, i) => {
+          const data = d.data();
           const div = document.createElement("div");
           div.className = "photo-item fade-in";
-          div.style.animationDelay = `${index * 0.05}s`;
+          div.style.animationDelay = `${i * 0.05}s`;
           div.innerHTML = `
             <input type="checkbox" class="select-checkbox" data-url="${data.url}">
             <img src="${data.url.replace('/upload/', '/upload/c_fill,h_600,w_600,q_auto,f_auto/')}" onclick="handlePhotoClick(this, '${data.url}')">
             <div class="photo-buttons">
               <button class="btn-save" onclick="window.open('${data.url}', '_blank')">保存</button>
-              ${currentUser && data.ownerId === currentUser.uid ? `<button class="btn-danger" onclick="deletePhoto('${docSnap.id}')">刪除</button>` : ''}
+              ${currentUser && data.ownerId === currentUser.uid ? `<button class="btn-danger" onclick="deletePhoto('${d.id}')">刪除</button>` : ''}
             </div>`;
           target.appendChild(div);
         });
@@ -242,66 +217,53 @@
         cb.checked = !cb.checked;
         item.classList.toggle('selected', cb.checked);
         updateBadge();
-      } else {
-        showBig(url);
-      }
+      } else { showBig(url); }
     };
 
     function updateBadge() {
       const count = document.querySelectorAll('.select-checkbox:checked').length;
-      const badge = document.getElementById("selectCountBadge");
-      badge.textContent = count;
-      badge.style.display = count > 0 ? "inline" : "none";
+      const b = document.getElementById("selectCountBadge");
+      b.textContent = count; b.style.display = count > 0 ? "inline" : "none";
     }
 
     document.getElementById("toggleSelectBtn").onclick = function() {
       isMultiSelectMode = !isMultiSelectMode;
       const gallery = document.getElementById("fullGallery");
-      const downloadBtn = document.getElementById("downloadSelectedBtn");
-      const selectAllBtn = document.getElementById("selectAllBtn");
+      const down = document.getElementById("downloadSelectedBtn"), all = document.getElementById("selectAllBtn");
       if (isMultiSelectMode) {
         this.textContent = "取消"; gallery.classList.add("multi-select-active");
-        downloadBtn.style.display = selectAllBtn.style.display = "flex";
+        down.style.display = all.style.display = "flex";
       } else {
-        this.textContent = "多選模式"; gallery.classList.remove("multi-select-active");
-        downloadBtn.style.display = selectAllBtn.style.display = "none";
+        this.textContent = "多選"; gallery.classList.remove("multi-select-active");
+        down.style.display = all.style.display = "none";
         document.getElementById("selectCountBadge").style.display = "none";
-        document.querySelectorAll('.photo-item').forEach(item => {
-            item.classList.remove('selected');
-            item.querySelector('.select-checkbox').checked = false;
-        });
+        document.querySelectorAll('.photo-item').forEach(i => { i.classList.remove('selected'); i.querySelector('.select-checkbox').checked = false; });
       }
     };
 
     document.getElementById("selectAllBtn").onclick = () => {
       const items = document.querySelectorAll('.photo-item');
       const allChecked = Array.from(items).every(i => i.querySelector('.select-checkbox').checked);
-      items.forEach(i => {
-        const cb = i.querySelector('.select-checkbox');
-        cb.checked = !allChecked;
-        i.classList.toggle('selected', cb.checked);
-      });
+      items.forEach(i => { const cb = i.querySelector('.select-checkbox'); cb.checked = !allChecked; i.classList.toggle('selected', cb.checked); });
       document.getElementById("selectAllBtn").textContent = allChecked ? "全選" : "取消全選";
       updateBadge();
     };
 
     document.getElementById("downloadSelectedBtn").onclick = async function() {
       const selected = document.querySelectorAll('.select-checkbox:checked');
-      if (selected.length === 0) return alert("請先勾選照片");
-      selected.forEach((cb, index) => {
+      if (!selected.length) return alert("請選取照片");
+      selected.forEach((cb, i) => {
         setTimeout(() => {
-          const a = document.createElement('a');
-          a.href = cb.getAttribute('data-url');
-          a.target = "_blank"; a.download = `photo_${index}.jpg`;
-          a.click();
-        }, index * 400);
+          const a = document.createElement('a'); a.href = cb.getAttribute('data-url');
+          a.target = "_blank"; a.download = `wedding_${i}.jpg`; a.click();
+        }, i * 400);
       });
     };
 
-    window.deletePhoto = async (id) => { if (confirm("刪除照片？")) { await deleteDoc(doc(db, "wedding_photos", id)); loadGallery(document.body.classList.contains('viewing-all')); } };
-    window.showBig = (url) => { document.getElementById("previewImage").src = url; document.getElementById("previewOverlay").style.display = "flex"; };
+    window.deletePhoto = async (id) => { if (confirm("刪除照片？")) { await deleteDoc(doc(db, "wedding_photos", id)); loadGallery(true); } };
+    window.showBig = (u) => { document.getElementById("previewImage").src = u; document.getElementById("previewOverlay").style.display = "flex"; };
     document.getElementById("previewOverlay").onclick = () => document.getElementById("previewOverlay").style.display = "none";
-    document.querySelectorAll(".backBtnAction").forEach(btn => { btn.onclick = () => { document.body.classList.remove("viewing-all"); isMultiSelectMode = false; loadGallery(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }; });
+    document.querySelectorAll(".backBtnAction").forEach(b => { b.onclick = () => { document.body.classList.remove("viewing-all"); isMultiSelectMode = false; loadGallery(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }; });
     document.getElementById("viewAllBtn").onclick = () => { document.body.classList.add("viewing-all"); loadGallery(true); };
   </script>
 </body>
