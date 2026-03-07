@@ -15,6 +15,31 @@
       --grey-x: #999;
     }
 
+    /* --- 強化的淡入動畫 --- */
+    @keyframes elegantFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(25px); /* 位移稍微大一點點，更有動感 */
+        filter: blur(5px); /* 增加一點模糊淡出的高級感 */
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    /* 應用動畫的類別 */
+    .fade-in {
+      opacity: 0; /* 初始完全隱藏 */
+      animation: elegantFadeIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* 依序延遲，讓元素一個接一個出現 */
+    .delay-header { animation-delay: 0.3s; }
+    .delay-card-1 { animation-delay: 0.8s; }
+    .delay-card-2 { animation-delay: 1.3s; }
+
     body {
       margin: 0; min-height: 100vh;
       background-color: #fdfbfb;
@@ -30,7 +55,6 @@
 
     .container { width: 100%; max-width: 400px; }
 
-    /* --- 標題區域設計（Welcome 水平調整） --- */
     .header-section {
       text-align: center;
       position: relative;
@@ -65,7 +89,6 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      /* 移除 rotate，確保完全水平 */
       transform: translate(-50%, -50%); 
       z-index: 1;
       pointer-events: none;
@@ -150,12 +173,12 @@
 <body>
 
   <div class="container">
-    <div class="header-section">
+    <div class="header-section fade-in delay-header">
       <h1>Jay & Michelle</h1>
       <div class="subtitle">WEDDING GALLERY</div>
     </div>
 
-    <div id="mainUploadSection" class="card">
+    <div id="mainUploadSection" class="card fade-in delay-card-1">
       <div class="btn-container">
           <label for="fileInput" class="btn-custom file-label">選擇相片</label>
           <input id="fileInput" type="file" accept="image/*" multiple />
@@ -167,7 +190,7 @@
       <div id="uploadStatus" class="status"></div>
     </div>
 
-    <div class="card">
+    <div class="card fade-in delay-card-2">
       <h3 id="previewTitle" style="text-align: center; color: var(--rose-gold); font-size: 0.85rem; margin-top: 0; letter-spacing: 2px;">LATEST</h3>
       <div id="gallery" class="gallery-preview"></div>
       <div class="btn-container">
@@ -188,7 +211,6 @@
   <div id="previewOverlay"><img id="previewImage" src=""></div>
 
   <script type="module">
-    // ... JavaScript 部分與前一版本完全相同 ...
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
