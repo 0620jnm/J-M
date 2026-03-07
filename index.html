@@ -44,15 +44,10 @@
     #previewOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 10000; }
     #previewImage { max-width: 95%; max-height: 90%; object-fit: contain; }
     
-    /* 多選強化樣式 */
     .select-checkbox { position: absolute; top: 10px; left: 10px; width: 22px; height: 22px; accent-color: var(--rose-gold); z-index: 10; display: none; cursor: pointer; }
     .multi-select-active .select-checkbox { display: block; border: 2px solid #fff; border-radius: 4px; }
-    
-    /* 被勾選時的照片外觀：褐色底色、縮小、透明 */
     .photo-item.selected { background-color: var(--rose-gold); }
     .photo-item.selected img { opacity: 0.35; transform: scale(0.9); }
-    
-    /* 勾選時的文字或徽章 */
     .badge { background: var(--rose-gold); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 5px; }
   </style>
 </head>
@@ -202,13 +197,31 @@
             <input type="checkbox" class="select-checkbox" data-url="${data.url}">
             <img src="${data.url.replace('/upload/', '/upload/c_fill,h_600,w_600,q_auto,f_auto/')}" onclick="handlePhotoClick(this, '${data.url}')">
             <div class="photo-buttons">
-              <button class="btn-save" onclick="window.open('${data.url}', '_blank')">保存</button>
+              <button class="btn-save" onclick="directDownload('${data.url}', 'wedding_${i}.jpg')">保存</button>
               ${currentUser && data.ownerId === currentUser.uid ? `<button class="btn-danger" onclick="deletePhoto('${d.id}')">刪除</button>` : ''}
             </div>`;
           target.appendChild(div);
         });
       } catch (e) { console.error(e); }
     }
+
+    // --- 新增：強制直接下載不開新頁的函數 ---
+    window.directDownload = async (url, filename) => {
+      try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(a);
+      } catch (e) {
+        window.open(url, '_blank'); // 如果失敗才退回開新頁
+      }
+    };
 
     window.handlePhotoClick = (img, url) => {
       if (isMultiSelectMode) {
@@ -252,12 +265,17 @@
     document.getElementById("downloadSelectedBtn").onclick = async function() {
       const selected = document.querySelectorAll('.select-checkbox:checked');
       if (!selected.length) return alert("請選取照片");
-      selected.forEach((cb, i) => {
-        setTimeout(() => {
-          const a = document.createElement('a'); a.href = cb.getAttribute('data-url');
-          a.target = "_blank"; a.download = `wedding_${i}.jpg`; a.click();
-        }, i * 400);
-      });
+      const btn = this;
+      btn.textContent = "準備中"; btn.disabled = true;
+      
+      for (let i = 0; i < selected.length; i++) {
+        const url = selected[i].getAttribute('data-url');
+        await directDownload(url, `wedding_batch_${i}.jpg`);
+        // 稍微延遲一下，讓瀏覽器反應得過來
+        await new Promise(r => setTimeout(r, 400));
+      }
+      
+      btn.textContent = "下載"; btn.disabled = false;
     };
 
     window.deletePhoto = async (id) => { if (confirm("刪除照片？")) { await deleteDoc(doc(db, "wedding_photos", id)); loadGallery(true); } };
