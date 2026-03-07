@@ -43,22 +43,23 @@
     }
 
     .btn-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
-
-    /* 統一按鈕樣式：白底玫瑰金邊 */
+    
+    /* 核心調整：僅統一字體樣式，保留原始漸層顏色設計 */
     .btn-custom, button {
-      width: 100%; max-width: 200px; padding: 10px 16px; font-size: 14px; font-weight: 700;
-      background: white !important;
-      color: var(--rose-gold) !important;
-      border: 1.2px solid var(--rose-gold) !important;
-      border-radius: 22px; cursor: pointer; transition: all 0.3s ease;
-      margin: 5px 0;
-      box-shadow: none;
+      width: 100%; max-width: 200px; padding: 10px 16px; 
+      font-size: 14px; font-weight: 700; /* 統一字體大小與粗細 */
+      letter-spacing: 1px; /* 統一字間距 */
+      color: white; background: linear-gradient(135deg, #c5a391 0%, #b38d7a 100%);
+      border: none; border-radius: 22px; cursor: pointer; transition: all 0.3s ease;
+      margin: 5px 0; box-shadow: 0 3px 10px rgba(197, 163, 145, 0.15);
       display: flex; align-items: center; justify-content: center;
     }
-    
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
 
     #fileInput { display: none; }
+    .file-label {
+      background: white !important; color: var(--rose-gold) !important;
+      border: 1.2px solid var(--rose-gold) !important; box-shadow: none !important;
+    }
 
     #selectionInfo { font-size: 12px; color: var(--rose-gold); margin: 5px 0; font-weight: 700; display: none; }
     .preview-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 8px 2px; width: 100%; scrollbar-width: none; }
@@ -79,18 +80,13 @@
     .progress-bar { width: 0%; height: 100%; background: var(--rose-gold); transition: width 0.3s; }
 
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .loading-icon { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(197,163,145,0.3); border-top-color: var(--rose-gold); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px; vertical-align: middle; }
+    .loading-icon { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(197,163,145,0.3); border-top-color: var(--rose-gold); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 5px; vertical-align: middle; }
 
     .gallery-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
     .photo-item { border-radius: 8px; overflow: hidden; background: rgba(255,255,255,0.3); }
     .photo-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; cursor: pointer; display: block; }
-    
-    /* 照片下方的小按鈕保持玫瑰金底色以示區分 */
     .photo-buttons { display: flex; gap: 2px; padding: 3px; justify-content: center; }
-    .photo-buttons button { 
-      padding: 3px; font-size: 8px; margin: 0; max-width: 40px; border-radius: 12px; 
-      background: var(--rose-gold) !important; color: white !important; border: none !important;
-    }
+    .photo-buttons button { padding: 3px; font-size: 8px; margin: 0; background: var(--rose-gold); max-width: 40px; border-radius: 12px; box-shadow: none; }
 
     .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .status { font-size: 12px; color: var(--rose-gold); text-align: center; margin-top: 6px; font-weight: 700; min-height: 1.2em; }
@@ -111,7 +107,7 @@
 
     <div id="mainUploadSection" class="card">
       <div class="btn-container">
-          <label for="fileInput" class="btn-custom">選擇相片</label>
+          <label for="fileInput" class="btn-custom file-label">選擇相片</label>
           <input id="fileInput" type="file" accept="image/*" multiple />
           
           <div id="selectionInfo">已選取 0 張照片</div>
@@ -134,7 +130,7 @@
         <h3 style="text-align: center; color: var(--rose-gold); font-size: 0.85rem;">ALL MEMORIES</h3>
         <div id="fullGallery" class="gallery-full"></div>
         <div class="btn-container">
-            <button id="backBtn">返回</button>
+            <button id="backBtn" class="btn-custom file-label">返回</button>
         </div>
       </div>
       <p id="emptyMsg" style="text-align:center; color:#b5a6a3; display:none; font-size: 12px;">尚無照片</p>
@@ -296,7 +292,7 @@
             <img src="${getDisplayUrl(data.url)}" onclick="showPreview('${data.url.replace('/upload/', '/upload/c_limit,w_900,q_auto,f_auto/')}')">
             <div class="photo-buttons">
               <button onclick="downloadImage('${data.url}')">保存</button>
-              ${currentUser && data.ownerId === currentUser.uid ? `<button style="background:var(--danger-red) !important" onclick="deletePhoto('${docSnap.id}')">刪除</button>` : ''}
+              ${currentUser && data.ownerId === currentUser.uid ? `<button style="background:var(--danger-red)" onclick="deletePhoto('${docSnap.id}')">刪除</button>` : ''}
             </div>
           `;
           targetGallery.appendChild(div);
