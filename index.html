@@ -57,11 +57,17 @@
     #uploadBtn, #viewAllBtn { color: white; background: linear-gradient(135deg, #c5a391 0%, #b38d7a 100%); }
     .file-label, #backBtn { background: white !important; color: var(--rose-gold) !important; border: 1.2px solid var(--rose-gold) !important; }
 
-    /* 縮圖預覽優化 */
-    .preview-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; width: 100%; min-height: 65px; }
+    /* 縮圖區域優化：沒圖就不佔空間 */
+    .preview-scroll { 
+      display: flex; gap: 8px; overflow-x: auto; 
+      padding: 0; width: 100%; height: 0; /* 預設高度 0 */
+      transition: all 0.3s ease;
+    }
+    .preview-scroll.active { padding: 8px 0; height: 75px; } /* 有圖時才撐開 */
+
     .preview-item { position: relative; flex-shrink: 0; width: 60px; height: 60px; background: #eee; border-radius: 8px; overflow: hidden; }
     .preview-thumb { width: 100%; height: 100%; object-fit: cover; }
-    .remove-btn { position: absolute; top: 2px; right: 2px; background: rgba(255,255,255,0.8); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; }
+    .remove-btn { position: absolute; top: 2px; right: 2px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; color: var(--text-dark); }
 
     .gallery-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
     .photo-item { border-radius: 8px; overflow: hidden; background: #eee; }
@@ -73,8 +79,10 @@
     .btn-danger { background: var(--danger-red) !important; }
 
     #fileInput { display: none; }
-    .progress-wrap { width: 100%; max-width: 200px; height: 4px; background: #eee; border-radius: 10px; margin: 10px 0; display: none; overflow: hidden; }
-    .progress-bar { width: 0%; height: 100%; background: var(--rose-gold); }
+    
+    /* 進度條樣式 */
+    .progress-wrap { width: 100%; max-width: 200px; height: 5px; background: #eee; border-radius: 10px; margin: 10px 0; display: none; overflow: hidden; }
+    .progress-bar { width: 0%; height: 100%; background: var(--rose-gold); transition: width 0.2s; }
     .status { font-size: 12px; color: var(--rose-gold); text-align: center; margin-top: 5px; font-weight: 700; }
 
     #allPhotosSection { display: none; }
@@ -153,12 +161,14 @@
       else { signInAnonymously(auth); }
     });
 
-    // 選擇檔案與縮圖壓縮處理
     document.getElementById("fileInput").onchange = (e) => {
       const files = Array.from(e.target.files);
+      const container = document.getElementById("previewContainer");
+      if (files.length > 0) container.classList.add('active');
+      
       files.forEach(file => {
-        selectedFiles.push(file); // 存原圖供上傳
-        createCompressedPreview(file); // 產壓縮圖供預覽
+        selectedFiles.push(file);
+        createCompressedPreview(file);
       });
       document.getElementById("selectionInfo").textContent = `已選取 ${selectedFiles.length} 張相片`;
       e.target.value = "";
@@ -170,15 +180,12 @@
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const MAX_SIZE = 120; // 縮圖解析度，極小但不失真
-          let width = img.width;
-          let height = img.height;
+          const MAX_SIZE = 120;
+          let width = img.width, height = img.height;
           if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
           else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
+          canvas.width = width; canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
           
           const wrapper = document.createElement("div");
           wrapper.className = "preview-item fade-in";
@@ -192,9 +199,11 @@
 
     window.removeFile = (btn) => {
       const item = btn.parentElement;
-      const index = Array.from(item.parentElement.children).indexOf(item);
+      const container = item.parentElement;
+      const index = Array.from(container.children).indexOf(item);
       selectedFiles.splice(index, 1);
       item.remove();
+      if (selectedFiles.length === 0) container.classList.remove('active');
       document.getElementById("selectionInfo").textContent = selectedFiles.length > 0 ? `已選取 ${selectedFiles.length} 張` : "";
     };
 
@@ -207,12 +216,13 @@
 
       btn.disabled = true;
       wrap.style.display = "block";
+      bar.style.width = "0%";
       
       for (let i = 0; i < selectedFiles.length; i++) {
         status.textContent = `上傳中 (${i+1}/${selectedFiles.length})`;
         try {
           const formData = new FormData();
-          formData.append("file", selectedFiles[i]); // 這裡是原圖
+          formData.append("file", selectedFiles[i]);
           formData.append("upload_preset", UPLOAD_PRESET);
 
           const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, { method: "POST", body: formData });
@@ -224,11 +234,17 @@
         bar.style.width = `${((i+1)/selectedFiles.length)*100}%`;
       }
 
-      status.textContent = "上傳成功！";
+      // 上傳結束後，立刻隱藏進度條與狀態
+      wrap.style.display = "none"; 
+      status.textContent = "✅ 上傳成功！";
+      
       selectedFiles = [];
-      document.getElementById("previewContainer").innerHTML = "";
+      const container = document.getElementById("previewContainer");
+      container.innerHTML = "";
+      container.classList.remove('active');
       document.getElementById("selectionInfo").textContent = "";
-      setTimeout(() => { wrap.style.display = "none"; status.textContent = ""; btn.disabled = false; }, 3000);
+      
+      setTimeout(() => { status.textContent = ""; btn.disabled = false; }, 2000);
       loadGallery(false);
     };
 
