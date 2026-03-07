@@ -12,7 +12,6 @@
       --danger-red: #d9534f;
     }
 
-    /* --- 全域淡入動畫 --- */
     @keyframes smoothFadeIn {
       0% { opacity: 0; transform: translateY(12px); }
       100% { opacity: 1; transform: translateY(0); }
@@ -48,15 +47,11 @@
       box-shadow: 0 8px 20px rgba(109, 93, 90, 0.04);
     }
 
-    /* --- 按鈕樣式修正 (文字居中) --- */
     .btn-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
     .btn-custom, button {
-      width: 100%; max-width: 200px; height: 44px; /* 固定高度確保居中 */
-      padding: 0 16px; box-sizing: border-box;
-      font-family: 'Noto Serif TC', serif;
-      font-size: 14px; font-weight: 700; border-radius: 22px; cursor: pointer; 
-      margin: 6px 0; border: none; 
-      display: flex; align-items: center; justify-content: center; /* 垂直水平居中 */
+      width: 100%; max-width: 200px; height: 44px; padding: 0 16px; box-sizing: border-box;
+      font-family: 'Noto Serif TC', serif; font-size: 14px; font-weight: 700; border-radius: 22px; cursor: pointer; 
+      margin: 6px 0; border: none; display: flex; align-items: center; justify-content: center;
       transition: transform 0.1s; line-height: 1;
     }
     .btn-custom:active, button:active { transform: scale(0.95); }
@@ -64,17 +59,28 @@
     #uploadBtn, #viewAllBtn { color: white; background: linear-gradient(135deg, #c5a391 0%, #b38d7a 100%); }
     .file-label, #backBtn { background: white !important; color: var(--rose-gold) !important; border: 1.2px solid var(--rose-gold) !important; }
 
-    /* --- 縮圖區域 (修復大空白) --- */
+    /* 水平捲動縮圖區 */
     .preview-scroll { 
-      display: flex; gap: 8px; overflow-x: auto; 
+      display: flex; gap: 10px; 
+      overflow-x: auto; overflow-y: hidden;
+      white-space: nowrap; 
       max-height: 0; opacity: 0; width: 100%;
-      transition: all 0.4s ease; /* 平滑收合 */
+      transition: all 0.4s ease;
+      scrollbar-width: none;
     }
-    .preview-scroll.active { max-height: 100px; opacity: 1; padding: 10px 0; }
+    .preview-scroll::-webkit-scrollbar { display: none; }
+    .preview-scroll.active { max-height: 110px; opacity: 1; padding: 10px 0; }
 
-    .preview-item { position: relative; flex-shrink: 0; width: 60px; height: 60px; background: #eee; border-radius: 8px; overflow: hidden; }
+    .preview-item { 
+      position: relative; display: inline-block; flex-shrink: 0; 
+      width: 70px; height: 70px; background: #eee; border-radius: 8px; overflow: hidden; 
+    }
     .preview-thumb { width: 100%; height: 100%; object-fit: cover; }
-    .remove-btn { position: absolute; top: 2px; right: 2px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; color: #000; }
+    .remove-btn { 
+      position: absolute; top: 2px; right: 2px; background: rgba(255,255,255,0.9); 
+      border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; 
+      justify-content: center; font-size: 10px; cursor: pointer; color: #000; z-index: 10;
+    }
 
     .gallery-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
     .photo-item { border-radius: 8px; overflow: hidden; background: #f0f0f0; }
@@ -88,7 +94,7 @@
     #fileInput { display: none; }
     .progress-wrap { width: 100%; max-width: 200px; height: 5px; background: #eee; border-radius: 10px; margin: 10px 0; display: none; overflow: hidden; }
     .progress-bar { width: 0%; height: 100%; background: var(--rose-gold); transition: width 0.2s; }
-    .status { font-size: 12px; color: var(--rose-gold); text-align: center; margin: 5px 0; font-weight: 700; height: 18px; }
+    .status { font-size: 12px; color: var(--rose-gold); text-align: center; margin: 5px 0; font-weight: 700; min-height: 18px; line-height: 1.4; }
 
     #allPhotosSection { display: none; }
     .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn, .viewing-all #gallery { display: none; }
@@ -211,6 +217,7 @@
 
     document.getElementById("uploadBtn").onclick = async () => {
       if (!selectedFiles.length) return;
+      const count = selectedFiles.length; // 紀錄張數
       const btn = document.getElementById("uploadBtn");
       const status = document.getElementById("uploadStatus");
       const bar = document.getElementById("progressBar");
@@ -220,7 +227,7 @@
       wrap.style.display = "block";
       
       for (let i = 0; i < selectedFiles.length; i++) {
-        status.textContent = `上傳中 (${i+1}/${selectedFiles.length})`;
+        status.textContent = `上傳中 (${i+1}/${selectedFiles.length})...`;
         try {
           const formData = new FormData();
           formData.append("file", selectedFiles[i]);
@@ -235,13 +242,15 @@
       }
 
       wrap.style.display = "none";
-      status.textContent = "✅ 上傳成功";
+      // 成功文字修改
+      status.textContent = `成功上傳 ${count} 張照片，謝謝您的分享！`;
+      
       selectedFiles = [];
       const pc = document.getElementById("previewContainer");
       pc.innerHTML = ""; pc.classList.remove('active');
       document.getElementById("selectionInfo").textContent = "";
       
-      setTimeout(() => { status.textContent = ""; btn.disabled = false; }, 2000);
+      setTimeout(() => { status.textContent = ""; btn.disabled = false; }, 4000);
       loadGallery(false);
     };
 
