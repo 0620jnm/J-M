@@ -15,30 +15,29 @@
       --grey-x: #999;
     }
 
-    /* --- 強化的淡入動畫 --- */
-    @keyframes elegantFadeIn {
+    /* --- 極致流暢淡入動畫 --- */
+    @keyframes smoothFadeIn {
       0% {
         opacity: 0;
-        transform: translateY(25px); /* 位移稍微大一點點，更有動感 */
-        filter: blur(5px); /* 增加一點模糊淡出的高級感 */
+        transform: translateY(15px);
       }
       100% {
         opacity: 1;
         transform: translateY(0);
-        filter: blur(0);
       }
     }
 
-    /* 應用動畫的類別 */
     .fade-in {
-      opacity: 0; /* 初始完全隱藏 */
-      animation: elegantFadeIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      opacity: 0;
+      /* 使用 will-change 提前通知瀏覽器，開啟硬體加速 */
+      will-change: opacity, transform;
+      animation: smoothFadeIn 1.2s cubic-bezier(0.33, 1, 0.68, 1) forwards;
     }
 
-    /* 依序延遲，讓元素一個接一個出現 */
-    .delay-header { animation-delay: 0.3s; }
-    .delay-card-1 { animation-delay: 0.8s; }
-    .delay-card-2 { animation-delay: 1.3s; }
+    /* 稍微縮短延遲時間，讓流暢感連貫 */
+    .delay-header { animation-delay: 0.2s; }
+    .delay-card-1 { animation-delay: 0.5s; }
+    .delay-card-2 { animation-delay: 0.8s; }
 
     body {
       margin: 0; min-height: 100vh;
@@ -51,6 +50,8 @@
       color: var(--text-dark);
       font-family: 'Noto Serif TC', serif;
       display: flex; flex-direction: column; align-items: center; padding: 20px 10px;
+      /* 避免動畫抖動 */
+      -webkit-font-smoothing: antialiased;
     }
 
     .container { width: 100%; max-width: 400px; }
