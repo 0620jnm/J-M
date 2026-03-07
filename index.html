@@ -15,6 +15,7 @@
       --grey-x: #999;
     }
 
+    /* --- 淡入動畫 --- */
     @keyframes smoothFadeIn {
       0% { opacity: 0; transform: translateY(15px); }
       100% { opacity: 1; transform: translateY(0); }
@@ -43,73 +44,43 @@
 
     .container { width: 100%; max-width: 400px; }
 
-    .header-section {
-      text-align: center;
-      position: relative;
-      margin-bottom: 25px;
-      padding: 15px 0;
-    }
+    .header-section { text-align: center; position: relative; margin-bottom: 25px; padding: 15px 0; }
     h1 { color: var(--rose-gold); font-family: 'Dancing Script', cursive; font-size: 2.6rem; margin: 0; position: relative; z-index: 2; }
     .subtitle { font-size: 0.7rem; color: var(--rose-gold); margin: 0; letter-spacing: 3px; font-weight: 700; position: relative; z-index: 2; }
     .header-section::after {
-      content: "Welcome";
-      font-family: 'Imperial Script', cursive;
-      font-size: 8.5rem;
-      color: rgba(197, 163, 145, 0.18);
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%); 
+      content: "Welcome"; font-family: 'Imperial Script', cursive; font-size: 8.5rem; color: rgba(197, 163, 145, 0.18);
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
       z-index: 1; pointer-events: none; white-space: nowrap;
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      border-radius: 18px; padding: 14px; margin-bottom: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 8px 20px rgba(109, 93, 90, 0.04);
-      position: relative;
+      background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-radius: 18px; padding: 14px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 20px rgba(109, 93, 90, 0.04); position: relative;
     }
 
     .btn-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
-    
     .btn-custom, button {
-      width: 100%; max-width: 200px; padding: 10px 16px; 
-      font-family: 'Noto Serif TC', serif;
-      font-size: 14px; font-weight: 700; letter-spacing: 1px; 
-      border-radius: 22px; cursor: pointer; 
-      margin: 5px 0;
-      display: flex; align-items: center; justify-content: center;
-      border: none;
+      width: 100%; max-width: 200px; padding: 10px 16px; font-family: 'Noto Serif TC', serif;
+      font-size: 14px; font-weight: 700; letter-spacing: 1px; border-radius: 22px; cursor: pointer; 
+      margin: 5px 0; display: flex; align-items: center; justify-content: center; border: none;
       transition: transform 0.1s ease; 
     }
-
     .btn-custom:active, button:active { transform: scale(0.96); }
 
-    #uploadBtn, #viewAllBtn {
-      color: white; 
-      background: linear-gradient(135deg, #c5a391 0%, #b38d7a 100%);
-      box-shadow: 0 3px 10px rgba(197, 163, 145, 0.15);
-    }
-
-    .file-label, #backBtn {
-      background: white !important; 
-      color: var(--rose-gold) !important;
-      border: 1.2px solid var(--rose-gold) !important; 
-    }
+    #uploadBtn, #viewAllBtn { color: white; background: linear-gradient(135deg, #c5a391 0%, #b38d7a 100%); }
+    .file-label, #backBtn { background: white !important; color: var(--rose-gold) !important; border: 1.2px solid var(--rose-gold) !important; }
 
     .gallery-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
     .photo-item { border-radius: 8px; overflow: hidden; background: rgba(255,255,255,0.3); transition: transform 0.1s ease; }
-    .photo-item:active { transform: scale(0.96); }
     .photo-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; cursor: pointer; display: block; }
     
     .photo-buttons { display: flex; gap: 4px; padding: 4px; justify-content: center; }
-    .photo-buttons button { 
-      padding: 3px; font-size: 8px; margin: 0; max-width: 45px; border-radius: 12px; color: white !important; 
-    }
+    .photo-buttons button { padding: 3px; font-size: 8px; margin: 0; max-width: 45px; border-radius: 12px; color: white !important; }
     .btn-save { background: var(--rose-gold) !important; }
     .btn-danger { background: var(--danger-red) !important; }
 
+    /* 狀態顯示 */
     #fileInput { display: none; }
     #selectionInfo { font-size: 12px; color: var(--rose-gold); margin: 5px 0; font-weight: 700; display: none; }
     .preview-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 8px 2px; width: 100%; scrollbar-width: none; }
@@ -120,11 +91,12 @@
     .progress-bar { width: 0%; height: 100%; background: var(--rose-gold); transition: width 0.3s; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .loading-icon { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(197,163,145,0.3); border-top-color: var(--rose-gold); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 5px; vertical-align: middle; }
-    .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .status { font-size: 12px; color: var(--rose-gold); text-align: center; margin-top: 6px; font-weight: 700; min-height: 1.2em; }
+    
     #allPhotosSection { display: none; }
     .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn, .viewing-all #gallery { display: none; }
     .viewing-all #allPhotosSection { display: block; }
+    .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     #previewOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); display: none; align-items: center; justify-content: center; z-index: 9999; }
     #previewImage { max-width: 94%; max-height: 80%; border-radius: 10px; }
   </style>
@@ -206,6 +178,7 @@
     let currentUser = null;
     let selectedFiles = []; 
 
+    // 啟動時讀取照片
     onAuthStateChanged(auth, async (user) => {
       if (user) { currentUser = user; await loadGallery(false); }
       else { await signInAnonymously(auth); }
@@ -230,10 +203,7 @@
           reader.onload = (e) => {
             const wrapper = document.createElement("div");
             wrapper.className = "preview-item";
-            wrapper.innerHTML = `
-              <img src="${e.target.result}" class="preview-thumb">
-              <div class="remove-btn" onclick="removeSelected(${index})">✕</div>
-            `;
+            wrapper.innerHTML = `<img src="${e.target.result}" class="preview-thumb"><div class="remove-btn" onclick="removeSelected(${index})">✕</div>`;
             previewContainer.appendChild(wrapper);
           };
           reader.readAsDataURL(file);
@@ -241,10 +211,7 @@
       } else { selectionInfo.style.display = "none"; }
     }
 
-    window.removeSelected = (index) => {
-      selectedFiles.splice(index, 1);
-      renderPreviews();
-    };
+    window.removeSelected = (index) => { selectedFiles.splice(index, 1); renderPreviews(); };
 
     uploadBtn.onclick = async () => {
       if (!selectedFiles.length) { alert("請先選擇照片"); return; }
@@ -261,40 +228,21 @@
           formData.append("file", selectedFiles[i]);
           formData.append("upload_preset", UPLOAD_PRESET);
           
-          // 修正網址：從 api.api.cloudinary.com 改回 api.cloudinary.com
+          // 正確的 Cloudinary 網址
           const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
-          
-          if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(errorData.error.message || "上傳至雲端失敗");
-          }
-
           const data = await res.json();
-          await addDoc(photosCol, {
-            url: data.secure_url,
-            ownerId: currentUser.uid,
-            createdAt: serverTimestamp()
-          });
-          successCount++;
-        } catch (e) { 
-          console.error("Upload Error:", e);
-          uploadStatus.innerHTML = `<span style="color:var(--danger-red)">❌ 錯誤: ${e.message}</span>`;
-          // 發生錯誤不中斷，繼續嘗試下一個
-        }
+          
+          if (res.ok) {
+            await addDoc(photosCol, { url: data.secure_url, ownerId: currentUser.uid, createdAt: serverTimestamp() });
+            successCount++;
+          }
+        } catch (e) { console.error(e); }
         progressBar.style.width = `${((i + 1) / total) * 100}%`;
       }
-
       progressWrap.style.display = "none";
-      if (successCount === total) {
-        uploadStatus.innerHTML = "✅ 上傳成功！";
-        selectedFiles = [];
-        renderPreviews();
-      } else if (successCount > 0) {
-        uploadStatus.innerHTML = `⚠️ 部分成功 (${successCount}/${total})`;
-        selectedFiles = [];
-        renderPreviews();
-      }
-
+      uploadStatus.innerHTML = successCount === total ? "✅ 上傳成功！" : "⚠️ 部分成功";
+      selectedFiles = [];
+      renderPreviews();
       setTimeout(() => { uploadBtn.disabled = false; uploadStatus.innerHTML = ""; }, 5000);
       await loadGallery(false);
     };
@@ -315,7 +263,6 @@
           const div = document.createElement("div");
           div.className = "photo-item fade-in";
           div.style.animationDelay = `${index * 0.1s}s`;
-          
           div.innerHTML = `
             <img src="${getDisplayUrl(data.url)}" onclick="showPreview('${data.url.replace('/upload/', '/upload/c_limit,w_900,q_auto,f_auto/')}')">
             <div class="photo-buttons">
@@ -325,7 +272,7 @@
           `;
           targetGallery.appendChild(div);
         });
-      } catch (e) { console.error("Load Gallery Error:", e); }
+      } catch (e) { console.error("加載失敗:", e); }
     }
 
     window.showPreview = (url) => { document.getElementById("previewImage").src = url; document.getElementById("previewOverlay").style.display = "flex"; };
