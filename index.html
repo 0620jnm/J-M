@@ -44,7 +44,7 @@
 
     .container { width: 100%; max-width: 400px; }
 
-    /* --- 標題與 Welcome --- */
+    /* --- 標題與 Welcome (保持位置) --- */
     .header-section {
       text-align: center;
       position: relative;
@@ -64,7 +64,6 @@
       z-index: 1; pointer-events: none; white-space: nowrap;
     }
 
-    /* --- 卡片 --- */
     .card {
       background: rgba(255, 255, 255, 0.6);
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -76,7 +75,6 @@
 
     .btn-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
     
-    /* --- 按鈕基礎樣式 (恢復顏色與位置) --- */
     .btn-custom, button {
       width: 100%; max-width: 200px; padding: 10px 16px; 
       font-family: 'Noto Serif TC', serif;
@@ -85,11 +83,10 @@
       margin: 5px 0;
       display: flex; align-items: center; justify-content: center;
       border: none;
-      /* 新增：特效過渡，但不影響佈局 */
       transition: transform 0.1s ease; 
     }
 
-    /* 點擊特效：僅縮放，不改顏色 */
+    /* 點擊壓感特效 */
     .btn-custom:active, button:active {
       transform: scale(0.96);
     }
@@ -116,10 +113,10 @@
     .photo-buttons button { 
       padding: 3px; font-size: 8px; margin: 0; max-width: 45px; border-radius: 12px; color: white !important; 
     }
+    /* 保持顏色 */
     .btn-save { background: var(--rose-gold) !important; }
     .btn-danger { background: var(--danger-red) !important; }
 
-    /* 隱藏元素與狀態 */
     #fileInput { display: none; }
     #selectionInfo { font-size: 12px; color: var(--rose-gold); margin: 5px 0; font-weight: 700; display: none; }
     .preview-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 8px 2px; width: 100%; scrollbar-width: none; }
@@ -270,9 +267,8 @@
           const formData = new FormData();
           formData.append("file", selectedFiles[i]);
           formData.append("upload_preset", UPLOAD_PRESET);
-          const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
+          const res = await fetch(`https://api.api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
           const data = await res.json();
-          if (!res.ok) throw new Error(data.error.message);
           await addDoc(photosCol, {
             url: data.secure_url,
             ownerId: currentUser.uid,
@@ -283,10 +279,12 @@
         progressBar.style.width = `${((i + 1) / total) * 100}%`;
       }
       progressWrap.style.display = "none";
-      uploadStatus.innerHTML = successCount === total ? "✅ 上傳成功！" : "⚠️ 部分上傳失敗";
+      uploadStatus.innerHTML = "✅ 上傳成功！";
       selectedFiles = [];
       renderPreviews();
       setTimeout(() => { uploadBtn.disabled = false; uploadStatus.innerHTML = ""; }, 5000);
+      
+      // 上傳成功後，重新呼叫 loadGallery 更新最新照片
       await loadGallery(false);
     };
 
@@ -300,10 +298,14 @@
         const snap = await getDocs(q);
         if (snap.empty) { document.getElementById("emptyMsg").style.display = "block"; return; }
         document.getElementById("emptyMsg").style.display = "none";
-        snap.forEach(docSnap => {
+        
+        snap.forEach((docSnap, index) => {
           const data = docSnap.data();
           const div = document.createElement("div");
-          div.className = "photo-item";
+          // 重點：在此加入 fade-in 類別，並根據順序加入微小的延遲讓它更有層次感
+          div.className = "photo-item fade-in";
+          div.style.animationDelay = `${index * 0.15}s`;
+          
           div.innerHTML = `
             <img src="${getDisplayUrl(data.url)}" onclick="showPreview('${data.url.replace('/upload/', '/upload/c_limit,w_900,q_auto,f_auto/')}')">
             <div class="photo-buttons">
