@@ -28,8 +28,8 @@
     .remove-btn { position: absolute; top: 2px; right: 2px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; color: #000; z-index: 10; }
     .gallery-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
     .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 15px 0; }
-    .photo-item { border-radius: 8px; overflow: hidden; background: #f0f0f0; position: relative; }
-    .photo-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; transition: opacity 0.3s; }
+    .photo-item { border-radius: 8px; overflow: hidden; background: #f0f0f0; position: relative; transition: background 0.3s; }
+    .photo-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; transition: all 0.3s ease; }
     .photo-buttons { display: flex; gap: 4px; padding: 4px; justify-content: center; }
     .photo-buttons button { padding: 0; height: 24px; font-size: 8px; margin: 0; width: 45px; border-radius: 12px; color: white !important; }
     .btn-save { background: var(--rose-gold) !important; }
@@ -44,11 +44,18 @@
     #previewOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 10000; }
     #previewImage { max-width: 95%; max-height: 90%; object-fit: contain; }
     
-    /* 多選樣式 */
-    .select-checkbox { position: absolute; top: 10px; left: 10px; width: 20px; height: 20px; accent-color: var(--rose-gold); z-index: 10; display: none; transform: scale(1.2); }
+    /* 褐色多選強化樣式 */
+    .select-checkbox { position: absolute; top: 10px; left: 10px; width: 22px; height: 22px; accent-color: #fff; z-index: 10; display: none; cursor: pointer; }
     .multi-select-active .select-checkbox { display: block; }
-    .multi-select-active .photo-item img { opacity: 0.7; }
-    .multi-select-active .select-checkbox:checked + img { opacity: 1; box-shadow: 0 0 0 3px var(--rose-gold); }
+    .multi-select-active .photo-item img { opacity: 0.8; filter: grayscale(30%); }
+    
+    /* 選中時的褐色反白效果 */
+    .photo-item.selected { background: var(--rose-gold); }
+    .photo-item.selected img { opacity: 0.4; transform: scale(0.92); }
+    
+    /* 選中時的勾選框發光提示 */
+    .select-checkbox:checked { filter: drop-shadow(0 0 5px rgba(255,255,255,0.8)); }
+
     .badge { background: var(--rose-gold); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 5px; }
   </style>
 </head>
@@ -88,7 +95,7 @@
         </h3>
         
         <div class="btn-container" style="flex-direction: row; justify-content: center; gap: 8px;">
-          <button id="toggleSelectBtn" class="btn-custom btn-outline" style="width: 100px;">多選下載</button>
+          <button id="toggleSelectBtn" class="btn-custom btn-outline" style="width: 100px;">多選模式</button>
           <button id="selectAllBtn" class="btn-custom btn-outline" style="width: 80px; display: none;">全選</button>
           <button id="downloadSelectedBtn" class="btn-custom" style="width: 100px; display: none;">下載</button>
         </div>
@@ -172,7 +179,6 @@
 
     document.getElementById("uploadBtn").onclick = async () => {
       if (!selectedFiles.length) return;
-      const count = selectedFiles.length;
       const btn = document.getElementById("uploadBtn");
       const status = document.getElementById("uploadStatus");
       const bar = document.getElementById("progressBar");
@@ -195,7 +201,7 @@
         bar.style.width = `${((i+1)/selectedFiles.length)*100}%`;
       }
       wrap.style.display = "none";
-      status.textContent = successCount > 0 ? `成功上傳 ${successCount} 張照片！` : "上傳失敗。";
+      status.textContent = `成功上傳 ${successCount} 張照片！`;
       selectedFiles = [];
       const pc = document.getElementById("previewContainer");
       pc.innerHTML = ""; pc.classList.remove('active');
@@ -232,7 +238,9 @@
     window.handlePhotoClick = (img, url) => {
       if (isMultiSelectMode) {
         const cb = img.previousElementSibling;
+        const item = img.parentElement;
         cb.checked = !cb.checked;
+        item.classList.toggle('selected', cb.checked);
         updateBadge();
       } else {
         showBig(url);
@@ -251,22 +259,28 @@
       const gallery = document.getElementById("fullGallery");
       const downloadBtn = document.getElementById("downloadSelectedBtn");
       const selectAllBtn = document.getElementById("selectAllBtn");
-      const badge = document.getElementById("selectCountBadge");
       if (isMultiSelectMode) {
         this.textContent = "取消"; gallery.classList.add("multi-select-active");
         downloadBtn.style.display = selectAllBtn.style.display = "flex";
       } else {
-        this.textContent = "多選下載"; gallery.classList.remove("multi-select-active");
+        this.textContent = "多選模式"; gallery.classList.remove("multi-select-active");
         downloadBtn.style.display = selectAllBtn.style.display = "none";
-        badge.style.display = "none";
-        document.querySelectorAll('.select-checkbox').forEach(cb => cb.checked = false);
+        document.getElementById("selectCountBadge").style.display = "none";
+        document.querySelectorAll('.photo-item').forEach(item => {
+            item.classList.remove('selected');
+            item.querySelector('.select-checkbox').checked = false;
+        });
       }
     };
 
     document.getElementById("selectAllBtn").onclick = () => {
-      const cbs = document.querySelectorAll('.select-checkbox');
-      const allChecked = Array.from(cbs).every(cb => cb.checked);
-      cbs.forEach(cb => cb.checked = !allChecked);
+      const items = document.querySelectorAll('.photo-item');
+      const allChecked = Array.from(items).every(i => i.querySelector('.select-checkbox').checked);
+      items.forEach(i => {
+        const cb = i.querySelector('.select-checkbox');
+        cb.checked = !allChecked;
+        i.classList.toggle('selected', cb.checked);
+      });
       document.getElementById("selectAllBtn").textContent = allChecked ? "全選" : "取消全選";
       updateBadge();
     };
@@ -274,16 +288,14 @@
     document.getElementById("downloadSelectedBtn").onclick = async function() {
       const selected = document.querySelectorAll('.select-checkbox:checked');
       if (selected.length === 0) return alert("請先勾選照片");
-      if (confirm(`下載這 ${selected.length} 張照片？`)) {
-        selected.forEach((cb, index) => {
-          setTimeout(() => {
-            const a = document.createElement('a');
-            a.href = cb.getAttribute('data-url');
-            a.target = "_blank"; a.download = `photo_${index}.jpg`;
-            a.click();
-          }, index * 400);
-        });
-      }
+      selected.forEach((cb, index) => {
+        setTimeout(() => {
+          const a = document.createElement('a');
+          a.href = cb.getAttribute('data-url');
+          a.target = "_blank"; a.download = `photo_${index}.jpg`;
+          a.click();
+        }, index * 400);
+      });
     };
 
     window.deletePhoto = async (id) => { if (confirm("刪除照片？")) { await deleteDoc(doc(db, "wedding_photos", id)); loadGallery(document.body.classList.contains('viewing-all')); } };
