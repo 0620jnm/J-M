@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Jay & Michelle Wedding Photos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&family=Ballet:opsz@16..72&display=swap" rel="stylesheet">
   <style>
     :root {
       --rose-gold: #c5a391;
@@ -30,12 +30,12 @@
 
     .container { width: 100%; max-width: 400px; }
 
-    /* --- 標題區域設計（細緻工整草寫 Welcome） --- */
+    /* --- 標題區域設計（Welcome 使用 Ballet 字體） --- */
     .header-section {
       text-align: center;
       position: relative;
       margin-bottom: 20px;
-      padding: 15px 0;
+      padding: 15px 0; /* 增加一點點垂直高度，讓 Ballet 的筆畫完整呈現 */
     }
 
     h1 {
@@ -44,8 +44,7 @@
       font-size: 2.6rem;
       margin: 0;
       position: relative;
-      z-index: 2;
-      text-shadow: 0 0 10px rgba(255,255,255,0.8); /* 增加一點點白暈，讓文字更立體 */
+      z-index: 2; /* 確保主標題在 Welcome 上層 */
     }
 
     .subtitle {
@@ -55,24 +54,22 @@
       letter-spacing: 3px;
       font-weight: 700;
       position: relative;
-      z-index: 2;
+      z-index: 2; /* 確保副標題在 Welcome 上層 */
     }
 
-    /* 細緻、工整、巨大的 Welcome --- */
+    /* 調整為 Ballet 字體、加大字級、保持極細透明感 */
     .header-section::after {
       content: "Welcome";
-      font-family: 'Great Vibes', cursive; /* 換成工整優雅的草寫 */
-      font-size: 7.2rem; /* 尺寸微調大一點，展現氣勢 */
-      font-weight: 300; /* 保持細線條 */
-      color: rgba(197, 163, 145, 0.15); /* 更輕薄的半透明玫瑰金 */
+      font-family: 'Ballet', cursive; /* 切換為 Ballet 字體 */
+      font-size: 8rem; /* Ballet 線條較細，加大至 8rem 維持震撼力 */
+      color: rgba(197, 163, 145, 0.15); /* 稍微降低透明度，保持優雅細緻 */
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%); /* 取消旋轉，維持工整感 */
+      transform: translate(-50%, -55%) rotate(-2deg); /* 微調位置與傾斜度 */
       z-index: 1;
       pointer-events: none;
       white-space: nowrap;
-      letter-spacing: 2px;
     }
 
     .card {
@@ -112,7 +109,6 @@
     }
 
     #fileInput { display: none; }
-
     #selectionInfo { font-size: 12px; color: var(--rose-gold); margin: 5px 0; font-weight: 700; display: none; }
     .preview-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 8px 2px; width: 100%; scrollbar-width: none; }
     .preview-scroll::-webkit-scrollbar { display: none; }
@@ -163,10 +159,8 @@
       <div class="btn-container">
           <label for="fileInput" class="btn-custom file-label">選擇相片</label>
           <input id="fileInput" type="file" accept="image/*" multiple />
-          
           <div id="selectionInfo">已選取 0 張照片</div>
           <div id="previewContainer" class="preview-scroll"></div>
-
           <button id="uploadBtn">開始上傳</button>
           <div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
       </div>
@@ -272,7 +266,6 @@
 
     uploadBtn.onclick = async () => {
       if (!selectedFiles.length) { alert("請先選擇照片"); return; }
-      
       uploadBtn.disabled = true;
       progressWrap.style.display = "block";
       progressBar.style.width = "0%";
@@ -286,45 +279,22 @@
           const formData = new FormData();
           formData.append("file", selectedFiles[i]);
           formData.append("upload_preset", UPLOAD_PRESET);
-
           const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
           const data = await res.json();
-
           if (!res.ok) throw new Error(data.error.message || "網路異常");
-
-          await addDoc(photosCol, {
-            url: data.secure_url,
-            ownerId: currentUser.uid,
-            createdAt: serverTimestamp()
-          });
+          await addDoc(photosCol, { url: data.secure_url, ownerId: currentUser.uid, createdAt: serverTimestamp() });
           successCount++;
         } catch (e) {
-          let msg = e.message;
-          if (msg.includes("limit")) msg = "檔案太大";
-          if (msg.includes("fetch")) msg = "網路斷線";
-          errors.add(msg);
+          errors.add(e.message);
         }
         progressBar.style.width = `${((i + 1) / total) * 100}%`;
       }
 
       progressWrap.style.display = "none";
-
-      if (successCount === total) {
-        uploadStatus.innerHTML = "✅ 上傳成功！";
-      } else if (successCount === 0) {
-        uploadStatus.innerHTML = `<span style="color:var(--danger-red)">❌ 上傳失敗，原因為：${Array.from(errors).join("、")}</span>`;
-      } else {
-        uploadStatus.innerHTML = `<span style="color:var(--danger-red)">⚠️ 部分上傳失敗，失敗原因為：${Array.from(errors).join("、")}</span>`;
-      }
-
+      uploadStatus.innerHTML = successCount === total ? "✅ 上傳成功！" : `⚠️ 部分上傳失敗: ${Array.from(errors).join("、")}`;
       selectedFiles = [];
       renderPreviews();
-      
-      setTimeout(() => { 
-        uploadBtn.disabled = false; 
-        uploadStatus.innerHTML = "";
-      }, 5000);
-      
+      setTimeout(() => { uploadBtn.disabled = false; uploadStatus.innerHTML = ""; }, 5000);
       await loadGallery(false);
     };
 
