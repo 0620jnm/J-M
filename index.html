@@ -8,15 +8,14 @@
   <style>
     :root {
       --rose-gold: #c5a391;
-      --rose-gold-dark: #b38d7a;
       --champagne: #f7e7ce;
       --soft-pink: #f5e3e0;
       --text-dark: #5a4d4a;
-      --danger-red: #d9534f;
+      --danger-red: #d9534f; /* 恢復刪除按鈕的紅色 */
       --grey-x: #999;
     }
 
-    /* --- 流暢淡入動畫 --- */
+    /* --- 流暢淡入動畫 (其他東西不動) --- */
     @keyframes smoothFadeIn {
       0% { opacity: 0; transform: translateY(15px); }
       100% { opacity: 1; transform: translateY(0); }
@@ -48,6 +47,7 @@
 
     .container { width: 100%; max-width: 400px; }
 
+    /* --- 標題區域 (Welcome 歪斜修正) --- */
     .header-section {
       text-align: center;
       position: relative;
@@ -80,7 +80,9 @@
       font-size: 8.5rem;
       color: rgba(197, 163, 145, 0.18);
       position: absolute;
-      top: 50%; left: 50%;
+      top: 50%;
+      left: 50%;
+      /* 恢復完美的水平置中 */
       transform: translate(-50%, -50%); 
       z-index: 1;
       pointer-events: none;
@@ -96,30 +98,18 @@
       position: relative;
     }
 
-    /* --- 按鈕通用樣式與點擊特效 --- */
+    .btn-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
+    
     .btn-custom, button {
       width: 100%; max-width: 200px; padding: 10px 16px; 
       font-family: 'Noto Serif TC', serif;
-      font-size: 14px; font-weight: 700; letter-spacing: 1px; 
-      border-radius: 22px; cursor: pointer; 
+      font-size: 14px; 
+      font-weight: 700; 
+      letter-spacing: 1px; 
+      border-radius: 22px; cursor: pointer; transition: all 0.3s ease;
       margin: 5px 0;
       display: flex; align-items: center; justify-content: center;
       border: none;
-      /* 動態過渡設定 */
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    /* 滑鼠懸停與點擊效果 */
-    .btn-custom:hover, button:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
-    }
-
-    .btn-custom:active, button:active {
-      transform: scale(0.95); /* 點擊時縮小 */
-      filter: brightness(0.9); /* 點擊時稍微變暗 */
     }
 
     #uploadBtn, #viewAllBtn {
@@ -135,22 +125,13 @@
       box-shadow: none !important;
     }
 
-    /* 針對小按鈕的特別微調 */
-    .photo-buttons button {
-      padding: 4px; font-size: 10px; border-radius: 12px;
-      transform: scale(1);
-    }
-    .photo-buttons button:active {
-      transform: scale(0.9);
-    }
-
-    /* 剩下的 CSS 保持不變... */
     #fileInput { display: none; }
     #selectionInfo { font-size: 12px; color: var(--rose-gold); margin: 5px 0; font-weight: 700; display: none; }
     .preview-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 8px 2px; width: 100%; scrollbar-width: none; }
     .preview-scroll::-webkit-scrollbar { display: none; }
     .preview-item { position: relative; flex-shrink: 0; width: 65px; height: 65px; }
     .preview-thumb { width: 100%; height: 100%; border-radius: 8px; object-fit: cover; border: 1.5px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+
     .remove-btn {
       position: absolute; top: -5px; right: -5px;
       background: #eee; color: var(--grey-x);
@@ -159,19 +140,55 @@
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 100;
     }
+
     .progress-wrap { width: 100%; max-width: 200px; height: 4px; background: #eee; border-radius: 10px; margin: 6px 0; display: none; overflow: hidden; }
     .progress-bar { width: 0%; height: 100%; background: var(--rose-gold); transition: width 0.3s; }
+
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .loading-icon { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(197,163,145,0.3); border-top-color: var(--rose-gold); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 5px; vertical-align: middle; }
+
     .gallery-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
-    .photo-item { border-radius: 8px; overflow: hidden; background: rgba(255,255,255,0.3); }
+    
+    /* --- 相片項目點擊特效 (其他東西不動) --- */
+    .photo-item { 
+      border-radius: 8px; 
+      overflow: hidden; 
+      background: rgba(255,255,255,0.3);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* 僅加入縮放過渡 */
+    }
+    
+    /* 點擊時微縮放 (僅針對照片本身，不搶顏色) */
+    .photo-item:active {
+      transform: scale(0.97);
+    }
+
     .photo-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; cursor: pointer; display: block; }
-    .photo-buttons { display: flex; gap: 4px; padding: 4px; justify-content: center; }
+    
+    /* --- 相片下方按鈕 (顏色修正) --- */
+    .photo-buttons { display: flex; gap: 2px; padding: 3px; justify-content: center; }
+    .photo-buttons button { 
+      padding: 3px; font-size: 8px; margin: 0; max-width: 40px; border-radius: 12px; 
+      color: white !important; /* 強制白色字 */
+      border: none !important; /* 移除邊框 */
+    }
+    
+    /* 保存按鈕：恢復玫瑰金 */
+    .btn-save {
+      background: var(--rose-gold) !important;
+    }
+    
+    /* 刪除按鈕：恢復紅色 */
+    .btn-danger {
+      background: var(--danger-red) !important;
+    }
+
     .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .status { font-size: 12px; color: var(--rose-gold); text-align: center; margin-top: 6px; font-weight: 700; min-height: 1.2em; }
+
     #allPhotosSection { display: none; }
     .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn, .viewing-all #gallery { display: none; }
     .viewing-all #allPhotosSection { display: block; }
+
     #previewOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); display: none; align-items: center; justify-content: center; z-index: 9999; }
     #previewImage { max-width: 94%; max-height: 80%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
   </style>
@@ -295,6 +312,7 @@
 
     uploadBtn.onclick = async () => {
       if (!selectedFiles.length) { alert("請先選擇照片"); return; }
+      
       uploadBtn.disabled = true;
       progressWrap.style.display = "block";
       progressBar.style.width = "0%";
@@ -308,9 +326,12 @@
           const formData = new FormData();
           formData.append("file", selectedFiles[i]);
           formData.append("upload_preset", UPLOAD_PRESET);
+
           const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
           const data = await res.json();
+
           if (!res.ok) throw new Error(data.error.message || "網路異常");
+
           await addDoc(photosCol, {
             url: data.secure_url,
             ownerId: currentUser.uid,
@@ -318,19 +339,32 @@
           });
           successCount++;
         } catch (e) {
-          errors.add(e.message);
+          let msg = e.message;
+          if (msg.includes("limit")) msg = "檔案太大";
+          if (msg.includes("fetch")) msg = "網路斷線";
+          errors.add(msg);
         }
         progressBar.style.width = `${((i + 1) / total) * 100}%`;
       }
+
       progressWrap.style.display = "none";
+
       if (successCount === total) {
         uploadStatus.innerHTML = "✅ 上傳成功！";
+      } else if (successCount === 0) {
+        uploadStatus.innerHTML = `<span style="color:var(--danger-red)">❌ 上傳失敗，原因為：${Array.from(errors).join("、")}</span>`;
       } else {
-        uploadStatus.innerHTML = `<span style="color:var(--danger-red)">⚠️ 部分成功 (${successCount}/${total})</span>`;
+        uploadStatus.innerHTML = `<span style="color:var(--danger-red)">⚠️ 部分上傳失敗，失敗原因為：${Array.from(errors).join("、")}</span>`;
       }
+
       selectedFiles = [];
       renderPreviews();
-      setTimeout(() => { uploadBtn.disabled = false; uploadStatus.innerHTML = ""; }, 5000);
+      
+      setTimeout(() => { 
+        uploadBtn.disabled = false; 
+        uploadStatus.innerHTML = "";
+      }, 5000);
+      
       await loadGallery(false);
     };
 
@@ -351,8 +385,8 @@
           div.innerHTML = `
             <img src="${getDisplayUrl(data.url)}" onclick="showPreview('${data.url.replace('/upload/', '/upload/c_limit,w_900,q_auto,f_auto/')}')">
             <div class="photo-buttons">
-              <button onclick="downloadImage('${data.url}')">保存</button>
-              ${currentUser && data.ownerId === currentUser.uid ? `<button style="background:var(--danger-red)" onclick="deletePhoto('${docSnap.id}')">刪除</button>` : ''}
+              <button class="btn-save" onclick="downloadImage('${data.url}')">保存</button>
+              ${currentUser && data.ownerId === currentUser.uid ? `<button class="btn-danger" onclick="deletePhoto('${docSnap.id}')">刪除</button>` : ''}
             </div>
           `;
           targetGallery.appendChild(div);
