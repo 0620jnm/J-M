@@ -2,39 +2,101 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>Jay & Michelle Wedding</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Jay & Michelle Wedding Photos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&family=Imperial+Script&display=swap" rel="stylesheet">
   <style>
-    :root { --rose: #c5a391; --text: #5a4d4a; --danger: #d9534f; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    .fade-in { opacity: 0; animation: fadeIn 0.6s ease-out forwards; }
-    body { margin: 0; min-height: 100vh; background: #fdfbfb; color: var(--text); font-family: 'Noto Serif TC', serif; display: flex; flex-direction: column; align-items: center; padding: 20px 10px; }
+    :root {
+      --rose-gold: #c5a391;
+      --text-dark: #5a4d4a;
+      --danger-red: #d9534f;
+    }
+
+    @keyframes smoothFadeIn {
+      0% { opacity: 0; transform: translateY(12px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      opacity: 0;
+      animation: smoothFadeIn 0.8s ease-out forwards;
+    }
+
+    body {
+      margin: 0; min-height: 100vh;
+      background-color: #fdfbfb;
+      background-image: radial-gradient(at 0% 0%, rgba(245, 227, 224, 0.6) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(247, 231, 206, 0.6) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-dark);
+      font-family: 'Noto Serif TC', serif;
+      display: flex; flex-direction: column; align-items: center; padding: 20px 10px;
+    }
+
     .container { width: 100%; max-width: 400px; }
+
     .header-section { text-align: center; position: relative; margin-bottom: 25px; padding: 15px 0; }
-    h1 { color: var(--rose); font-family: 'Dancing Script', cursive; font-size: 2.6rem; margin: 0; position: relative; z-index: 2; }
-    .subtitle { font-size: 0.7rem; color: var(--rose); margin: 0; letter-spacing: 3px; font-weight: 700; position: relative; z-index: 2; }
-    .header-section::after { content: "Welcome"; font-family: 'Imperial Script', cursive; font-size: 8.5rem; color: rgba(197, 163, 145, 0.15); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; pointer-events: none; }
-    .card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 18px; padding: 15px; margin-bottom: 16px; border: 1px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.03); }
+    h1 { color: var(--rose-gold); font-family: 'Dancing Script', cursive; font-size: 2.6rem; margin: 0; position: relative; z-index: 2; }
+    .subtitle { font-size: 0.7rem; color: var(--rose-gold); margin: 0; letter-spacing: 3px; font-weight: 700; position: relative; z-index: 2; }
+    .header-section::after {
+      content: "Welcome"; font-family: 'Imperial Script', cursive; font-size: 8.5rem; color: rgba(197, 163, 145, 0.18);
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; pointer-events: none;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-radius: 18px; padding: 14px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 20px rgba(109, 93, 90, 0.04);
+    }
+
     .btn-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
-    .btn-v2 { width: 100%; max-width: 200px; height: 44px; border-radius: 22px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 6px 0; transition: 0.2s; font-size: 14px; font-family: 'Noto Serif TC', serif; }
-    .btn-main { background: linear-gradient(135deg, #c5a391, #b38d7a); color: #fff; }
-    .btn-outline { background: #fff; color: var(--rose); border: 1.2px solid var(--rose); }
-    .preview-scroll { display: flex; gap: 10px; overflow-x: auto; overflow-y: hidden; white-space: nowrap; max-height: 0; opacity: 0; width: 100%; transition: 0.4s; scrollbar-width: none; }
+    .btn-custom, button {
+      width: 100%; max-width: 200px; height: 44px; padding: 0 16px; box-sizing: border-box;
+      font-family: 'Noto Serif TC', serif; font-size: 14px; font-weight: 700; border-radius: 22px; cursor: pointer; 
+      margin: 6px 0; border: none; display: flex; align-items: center; justify-content: center;
+      transition: transform 0.1s; line-height: 1;
+    }
+    .btn-custom:active, button:active { transform: scale(0.95); }
+
+    #uploadBtn, #viewAllBtn { color: white; background: linear-gradient(135deg, #c5a391 0%, #b38d7a 100%); }
+    .file-label, .back-btn-ui { background: white !important; color: var(--rose-gold) !important; border: 1.2px solid var(--rose-gold) !important; }
+
+    .preview-scroll { 
+      display: flex; gap: 10px; overflow-x: auto; overflow-y: hidden;
+      white-space: nowrap; max-height: 0; opacity: 0; width: 100%;
+      transition: all 0.4s ease; scrollbar-width: none;
+    }
+    .preview-scroll::-webkit-scrollbar { display: none; }
     .preview-scroll.active { max-height: 110px; opacity: 1; padding: 10px 0; }
-    .preview-item { position: relative; flex: 0 0 70px; height: 70px; border-radius: 8px; overflow: hidden; background: #eee; }
-    .preview-item img { width: 100%; height: 100%; object-fit: cover; }
-    .rm-btn { position: absolute; top: 2px; right: 2px; background: rgba(255,255,255,0.8); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #000; cursor: pointer; }
-    .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
-    .gallery-full { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .photo-item { border-radius: 8px; overflow: hidden; background: #f0f0f0; display: flex; flex-direction: column; }
+
+    .preview-item { 
+      position: relative; display: inline-block; flex-shrink: 0; 
+      width: 70px; height: 70px; background: #eee; border-radius: 8px; overflow: hidden; 
+    }
+    .preview-thumb { width: 100%; height: 100%; object-fit: cover; }
+    .remove-btn { 
+      position: absolute; top: 2px; right: 2px; background: rgba(255,255,255,0.9); 
+      border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; 
+      justify-content: center; font-size: 10px; cursor: pointer; color: #000; z-index: 10;
+    }
+
+    .gallery-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
+    .photo-item { border-radius: 8px; overflow: hidden; background: #f0f0f0; }
     .photo-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
-    .photo-btns { display: flex; gap: 4px; padding: 4px; justify-content: center; background: rgba(255,255,255,0.5); }
-    .photo-btns button { flex: 1; padding: 4px 0; font-size: 9px; border-radius: 12px; border: none; color: #fff; cursor: pointer; }
+    
+    .photo-buttons { display: flex; gap: 4px; padding: 4px; justify-content: center; }
+    .photo-buttons button { padding: 0; height: 24px; font-size: 8px; margin: 0; width: 45px; border-radius: 12px; color: white !important; }
+    .btn-save { background: var(--rose-gold) !important; }
+    .btn-danger { background: var(--danger-red) !important; }
+
+    #fileInput { display: none; }
+    .progress-wrap { width: 100%; max-width: 200px; height: 5px; background: #eee; border-radius: 10px; margin: 10px 0; display: none; overflow: hidden; }
+    .progress-bar { width: 0%; height: 100%; background: var(--rose-gold); transition: width 0.2s; }
+    .status { font-size: 12px; color: var(--rose-gold); text-align: center; margin: 5px 0; font-weight: 700; min-height: 18px; line-height: 1.4; }
+
+    /* 全覽模式顯示控制 */
     #allPhotosSection { display: none; }
     .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn, .viewing-all #gallery { display: none; }
     .viewing-all #allPhotosSection { display: block; }
-    .status { font-size: 12px; color: var(--rose); text-align: center; height: 18px; margin: 5px 0; font-weight: 700; }
+    .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 15px 0; }
     #previewOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 10000; }
     #previewImage { max-width: 95%; max-height: 90%; object-fit: contain; }
   </style>
@@ -49,167 +111,197 @@
 
     <div id="mainUploadSection" class="card fade-in" style="animation-delay: 0.1s;">
       <div class="btn-container">
-        <label for="fileInput" class="btn-v2 btn-outline">選擇相片</label>
-        <input id="fileInput" type="file" accept="image/*" multiple style="display:none">
-        <div id="selectionInfo" style="font-size:11px; color:var(--rose); height: 15px;"></div>
-        <div id="previewContainer" class="preview-scroll"></div>
-        <button id="uploadBtn" class="btn-v2 btn-main">開始上傳</button>
-        <div id="uploadStatus" class="status"></div>
+          <label for="fileInput" class="btn-custom file-label">選擇相片</label>
+          <input id="fileInput" type="file" accept="image/*" multiple />
+          <div id="selectionInfo" style="font-size:11px; color:var(--rose-gold); height: 15px;"></div>
+          <div id="previewContainer" class="preview-scroll"></div>
+          <button id="uploadBtn">開始上傳</button>
+          <div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
+          <div id="uploadStatus" class="status"></div>
       </div>
     </div>
 
     <div class="card fade-in" style="animation-delay: 0.2s;">
-      <h3 id="previewTitle" style="text-align: center; color: var(--rose); font-size: 0.85rem;">LATEST</h3>
-      <div id="gallery" class="gallery"></div>
+      <h3 id="previewTitle" style="text-align: center; color: var(--rose-gold); font-size: 0.85rem;">LATEST</h3>
+      <div id="gallery" class="gallery-preview"></div>
       <div class="btn-container">
-        <button id="viewAllBtn" class="btn-v2 btn-main">瀏覽所有照片</button>
+          <button id="viewAllBtn">瀏覽所有照片</button>
       </div>
 
       <div id="allPhotosSection">
-        <div class="btn-container"><button class="btn-v2 btn-outline backAction">返回</button></div>
-        <h3 style="text-align: center; color: var(--rose); font-size: 0.85rem; margin-top: 15px;">ALL MEMORIES</h3>
-        <div id="fullGallery" class="gallery gallery-full"></div>
         <div class="btn-container">
-          <button id="loadMoreBtn" class="btn-v2 btn-main" style="display:none">載入更多</button>
-          <button class="btn-v2 btn-outline backAction">返回</button>
+            <button class="btn-custom back-btn-ui backBtnAction">返回</button>
+        </div>
+        <h3 style="text-align: center; color: var(--rose-gold); font-size: 0.85rem; margin-top: 15px;">ALL MEMORIES</h3>
+        <div id="fullGallery" class="gallery-full"></div>
+        <div class="btn-container">
+            <button class="btn-custom back-btn-ui backBtnAction">返回</button>
         </div>
       </div>
-      <p id="emptyMsg" style="text-align:center; color:#999; display:none; font-size: 12px; padding: 20px;">尚無照片</p>
+      
+      <p id="emptyMsg" style="text-align:center; color:#999; display:none; font-size: 12px; padding: 10px;">尚無照片</p>
     </div>
   </div>
 
-  <div id="previewOverlay" onclick="this.style.display='none'"><img id="previewImage" src=""></div>
+  <div id="previewOverlay"><img id="previewImage" src=""></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc, doc, startAfter } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
-    const config = { apiKey: "AIzaSyAUFF7GdX7fAtK_wK5-YAffirtap52UgCg", authDomain: "wedding-e6351.firebaseapp.com", projectId: "wedding-e6351", storageBucket: "wedding-e6351.firebasestorage.app", messagingSenderId: "382633819825", appId: "1:382633819825:web:b1dd463dd466752f78ec90" };
-    const app = initializeApp(config), db = getFirestore(app), auth = getAuth(app), photosCol = collection(db, "wedding_photos");
-    
-    let currentUser = null, selectedFiles = [], lastDoc = null;
+    const CLOUD_NAME = "dfcbhdvq8";
+    const UPLOAD_PRESET = "wedding-photos";
+    const firebaseConfig = {
+      apiKey: "AIzaSyAUFF7GdX7fAtK_wK5-YAffirtap52UgCg",
+      authDomain: "wedding-e6351.firebaseapp.com",
+      projectId: "wedding-e6351",
+      storageBucket: "wedding-e6351.firebasestorage.app",
+      messagingSenderId: "382633819825",
+      appId: "1:382633819825:web:b1dd463dd466752f78ec90"
+    };
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) { currentUser = user; loadGallery(); }
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const photosCol = collection(db, "wedding_photos");
+
+    let currentUser = null;
+    let selectedFiles = []; 
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) { currentUser = user; loadGallery(false); }
       else { signInAnonymously(auth); }
     });
 
     document.getElementById("fileInput").onchange = (e) => {
       const files = Array.from(e.target.files);
-      if(!files.length) return;
-      const pc = document.getElementById("previewContainer");
-      pc.classList.add('active');
+      if (files.length > 0) document.getElementById("previewContainer").classList.add('active');
       files.forEach(file => {
         selectedFiles.push(file);
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = 100; canvas.height = 100;
-            canvas.getContext('2d').drawImage(img, 0, 0, 100, 100);
-            const div = document.createElement("div");
-            div.className = "preview-item fade-in";
-            div.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.6)}"><div class="rm-btn">✕</div>`;
-            div.querySelector('.rm-btn').onclick = (ex) => { 
-              ex.stopPropagation(); div.remove(); 
-              selectedFiles = selectedFiles.filter(f => f !== file); 
-              document.getElementById("selectionInfo").textContent = selectedFiles.length > 0 ? `已選取 ${selectedFiles.length} 張` : "";
-              if(!selectedFiles.length) pc.classList.remove('active'); 
-            };
-            pc.appendChild(div);
-          };
-          img.src = ev.target.result;
-        };
-        reader.readAsDataURL(file);
+        createCompressedPreview(file);
       });
       document.getElementById("selectionInfo").textContent = `已選取 ${selectedFiles.length} 張`;
+      e.target.value = "";
+    };
+
+    function createCompressedPreview(file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_SIZE = 120;
+          let w = img.width, h = img.height;
+          if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } }
+          else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const wrapper = document.createElement("div");
+          wrapper.className = "preview-item fade-in";
+          wrapper.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.6)}" class="preview-thumb"><div class="remove-btn" onclick="removeFile(this)">✕</div>`;
+          document.getElementById("previewContainer").appendChild(wrapper);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    window.removeFile = (btn) => {
+      const item = btn.parentElement;
+      const container = item.parentElement;
+      const index = Array.from(container.children).indexOf(item);
+      selectedFiles.splice(index, 1);
+      item.remove();
+      if (selectedFiles.length === 0) container.classList.remove('active');
+      document.getElementById("selectionInfo").textContent = selectedFiles.length > 0 ? `已選取 ${selectedFiles.length} 張` : "";
     };
 
     document.getElementById("uploadBtn").onclick = async () => {
-      if(!selectedFiles.length) return;
-      const btn = document.getElementById("uploadBtn"), status = document.getElementById("uploadStatus");
+      if (!selectedFiles.length) return;
       const count = selectedFiles.length;
+      const btn = document.getElementById("uploadBtn");
+      const status = document.getElementById("uploadStatus");
+      const bar = document.getElementById("progressBar");
+      const wrap = document.getElementById("progressWrap");
+
       btn.disabled = true;
-      let successCount = 0;
-
-      for(let i=0; i<count; i++){
-        status.textContent = `發送中 (${i+1}/${count})...`;
-        const fd = new FormData();
-        fd.append("file", selectedFiles[i]);
-        fd.append("upload_preset", "wedding-photos"); // ⚠️ 檢查這裡
-
+      wrap.style.display = "block";
+      
+      for (let i = 0; i < selectedFiles.length; i++) {
+        status.textContent = `上傳中 (${i+1}/${selectedFiles.length})...`;
         try {
-          const res = await fetch(`https://api.cloudinary.com/v1_1/dfcbhdvq8/upload`, { 
-            method: "POST", 
-            body: fd 
-          });
-          
-          if (!res.ok) throw new Error('Cloudinary Upload Failed');
-          
+          const formData = new FormData();
+          formData.append("file", selectedFiles[i]);
+          formData.append("upload_preset", UPLOAD_PRESET);
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, { method: "POST", body: formData });
           const data = await res.json();
-          if(data.secure_url) {
-            await addDoc(photosCol, { 
-              url: data.secure_url, 
-              uid: currentUser.uid, 
-              createdAt: serverTimestamp() 
-            });
-            successCount++;
+          if (data.secure_url) {
+            await addDoc(photosCol, { url: data.secure_url, ownerId: currentUser.uid, createdAt: serverTimestamp() });
           }
-        } catch(e) { 
-          console.error("詳細錯誤資訊:", e);
-        }
+        } catch (e) { console.error(e); }
+        bar.style.width = `${((i+1)/selectedFiles.length)*100}%`;
       }
 
-      if(successCount > 0) {
-        status.textContent = `成功上傳 ${successCount} 張照片，謝謝分享！`;
-        selectedFiles = []; 
-        document.getElementById("previewContainer").innerHTML = "";
-        document.getElementById("previewContainer").classList.remove('active');
-        document.getElementById("selectionInfo").textContent = "";
-        loadGallery();
-      } else {
-        status.textContent = "上傳失敗，請檢查網路或設定。";
-      }
-
+      wrap.style.display = "none";
+      status.textContent = `成功上傳 ${count} 張照片，謝謝您的分享！`;
+      
+      selectedFiles = [];
+      const pc = document.getElementById("previewContainer");
+      pc.innerHTML = ""; pc.classList.remove('active');
+      document.getElementById("selectionInfo").textContent = "";
+      
       setTimeout(() => { status.textContent = ""; btn.disabled = false; }, 4000);
+      loadGallery(false);
     };
 
-    async function loadGallery(append = false) {
-      const isFull = document.body.classList.contains('viewing-all');
+    async function loadGallery(isFull = false) {
       const target = isFull ? document.getElementById("fullGallery") : document.getElementById("gallery");
-      if(!append) { target.innerHTML = ""; lastDoc = null; }
-      
-      let q = query(photosCol, orderBy("createdAt", "desc"), limit(isFull ? 12 : 3));
-      if(append && lastDoc) q = query(photosCol, orderBy("createdAt", "desc"), startAfter(lastDoc), limit(12));
-      
-      const snap = await getDocs(q);
-      if(snap.empty && !append) { document.getElementById("emptyMsg").style.display = "block"; return; }
-      document.getElementById("emptyMsg").style.display = "none";
-      lastDoc = snap.docs[snap.docs.length - 1];
-      document.getElementById("loadMoreBtn").style.display = (isFull && snap.docs.length === 12) ? "block" : "none";
-
-      snap.forEach(d => {
-        const data = d.data();
-        const thumb = data.url.replace('/upload/', '/upload/c_fill,h_400,w_400,q_auto,f_auto/');
-        const div = document.createElement("div");
-        div.className = "photo-item fade-in";
-        div.innerHTML = `
-          <img src="${thumb}" onclick="showBig('${data.url}')">
-          <div class="photo-btns">
-            <button style="background:var(--rose)" onclick="window.open('${data.url}')">保存</button>
-            ${currentUser && data.uid === currentUser.uid ? `<button style="background:var(--danger)" onclick="delPhoto('${d.id}')">刪除</button>` : ''}
-          </div>`;
-        target.appendChild(div);
-      });
+      target.innerHTML = "";
+      try {
+        const q = isFull ? query(photosCol, orderBy("createdAt", "desc")) : query(photosCol, orderBy("createdAt", "desc"), limit(3));
+        const snap = await getDocs(q);
+        if (snap.empty) { document.getElementById("emptyMsg").style.display = "block"; return; }
+        document.getElementById("emptyMsg").style.display = "none";
+        snap.forEach((docSnap, index) => {
+          const data = docSnap.data();
+          const div = document.createElement("div");
+          div.className = "photo-item fade-in";
+          div.style.animationDelay = `${index * 0.1}s`;
+          div.innerHTML = `
+            <img src="${data.url.replace('/upload/', '/upload/c_fill,h_600,w_600,q_auto,f_auto/')}" onclick="showBig('${data.url}')">
+            <div class="photo-buttons">
+              <button class="btn-save" onclick="window.open('${data.url}', '_blank')">保存</button>
+              ${currentUser && data.ownerId === currentUser.uid ? `<button class="btn-danger" onclick="deletePhoto('${docSnap.id}')">刪除</button>` : ''}
+            </div>`;
+          target.appendChild(div);
+        });
+      } catch (e) { console.error(e); }
     }
 
-    window.delPhoto = async (id) => { if(confirm("確定刪除？")){ await deleteDoc(doc(db, "wedding_photos", id)); loadGallery(); } };
-    window.showBig = (u) => { document.getElementById("previewImage").src = u; document.getElementById("previewOverlay").style.display = "flex"; };
-    document.getElementById("viewAllBtn").onclick = () => { document.body.classList.add("viewing-all"); loadGallery(); };
-    document.querySelectorAll(".backAction").forEach(b => b.onclick = () => { document.body.classList.remove("viewing-all"); window.scrollTo(0,0); loadGallery(); });
-    document.getElementById("loadMoreBtn").onclick = () => loadGallery(true);
+    window.deletePhoto = async (id) => {
+      if (confirm("刪除照片？")) {
+        await deleteDoc(doc(db, "wedding_photos", id));
+        loadGallery(document.body.classList.contains('viewing-all'));
+      }
+    };
+
+    window.showBig = (url) => { document.getElementById("previewImage").src = url; document.getElementById("previewOverlay").style.display = "flex"; };
+    document.getElementById("previewOverlay").onclick = () => document.getElementById("previewOverlay").style.display = "none";
+    
+    // 返回功能（頂部與底部共用）
+    document.querySelectorAll(".backBtnAction").forEach(btn => {
+      btn.onclick = () => {
+        document.body.classList.remove("viewing-all");
+        loadGallery(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // 自動捲回頂部
+      };
+    });
+
+    document.getElementById("viewAllBtn").onclick = () => {
+      document.body.classList.add("viewing-all");
+      loadGallery(true);
+    };
   </script>
 </body>
 </html>
