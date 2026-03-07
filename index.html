@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Jay & Michelle Wedding Photos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&family=Birthstone+Bounce&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&family=Great+Vibes&display=swap" rel="stylesheet">
   <style>
     :root {
       --rose-gold: #c5a391;
@@ -30,12 +30,12 @@
 
     .container { width: 100%; max-width: 400px; }
 
-    /* --- 標題區域設計（含 Welcome） --- */
+    /* --- 標題區域設計（細緻工整草寫 Welcome） --- */
     .header-section {
       text-align: center;
-      position: relative; /* 為了讓 Welcome 定位 */
+      position: relative;
       margin-bottom: 20px;
-      padding: 10px 0; /* 給 Welcome 一點呼吸空間 */
+      padding: 15px 0;
     }
 
     h1 {
@@ -43,8 +43,9 @@
       font-family: 'Dancing Script', cursive;
       font-size: 2.6rem;
       margin: 0;
-      position: relative; /* 確保主標題在最上層 */
+      position: relative;
       z-index: 2;
+      text-shadow: 0 0 10px rgba(255,255,255,0.8); /* 增加一點點白暈，讓文字更立體 */
     }
 
     .subtitle {
@@ -53,23 +54,25 @@
       margin: 0;
       letter-spacing: 3px;
       font-weight: 700;
-      position: relative; /* 確保副標題在最上層 */
+      position: relative;
       z-index: 2;
     }
 
-    /* 隨興、草寫、巨大的 Welcome --- */
+    /* 細緻、工整、巨大的 Welcome --- */
     .header-section::after {
       content: "Welcome";
-      font-family: 'Birthstone Bounce', cursive; /* 充滿隨興感的優雅草寫 */
-      font-size: 6.5rem; /* 夠大 */
-      color: rgba(197, 163, 145, 0.2); /* 玫瑰金的半透明色，輕薄且細 */
+      font-family: 'Great Vibes', cursive; /* 換成工整優雅的草寫 */
+      font-size: 7.2rem; /* 尺寸微調大一點，展現氣勢 */
+      font-weight: 300; /* 保持細線條 */
+      color: rgba(197, 163, 145, 0.15); /* 更輕薄的半透明玫瑰金 */
       position: absolute;
-      top: 50%; /* 垂直置中於 header-section */
+      top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) rotate(-5deg); /* 水平置中、輕微傾斜增加隨興感 */
-      z-index: 1; /* 在文字後面 */
-      pointer-events: none; /* 讓滑鼠點擊穿透 */
+      transform: translate(-50%, -50%); /* 取消旋轉，維持工整感 */
+      z-index: 1;
+      pointer-events: none;
       white-space: nowrap;
+      letter-spacing: 2px;
     }
 
     .card {
@@ -83,10 +86,9 @@
 
     .btn-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
     
-    /* 核心調整：所有按鈕字體規格完全一致，但保留各自原本的顏色設計 */
     .btn-custom, button {
       width: 100%; max-width: 200px; padding: 10px 16px; 
-      font-family: 'Noto Serif TC', serif; /* 強制指定字體 */
+      font-family: 'Noto Serif TC', serif;
       font-size: 14px; 
       font-weight: 700; 
       letter-spacing: 1px; 
@@ -96,14 +98,12 @@
       border: none;
     }
 
-    /* 開始上傳、瀏覽照片：保留原本的玫瑰金漸層 */
     #uploadBtn, #viewAllBtn {
       color: white; 
       background: linear-gradient(135deg, #c5a391 0%, #b38d7a 100%);
       box-shadow: 0 3px 10px rgba(197, 163, 145, 0.15);
     }
 
-    /* 選擇相片、返回：保留白底玫瑰金邊設計 */
     .file-label, #backBtn {
       background: white !important; 
       color: var(--rose-gold) !important;
