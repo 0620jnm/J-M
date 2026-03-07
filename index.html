@@ -30,7 +30,7 @@
 
     .container { width: 100%; max-width: 400px; }
 
-    /* --- 標題區域設計（含 Welcome） --- */
+    /* --- 標題區域設計（Welcome 水平調整） --- */
     .header-section {
       text-align: center;
       position: relative;
@@ -57,16 +57,16 @@
       z-index: 2;
     }
 
-    /* 換成 Imperial Script：更纖細、更華麗 --- */
     .header-section::after {
       content: "Welcome";
-      font-family: 'Imperial Script', cursive; /* 切換為指定的 Imperial Script */
-      font-size: 8.5rem; /* 因為線條極細，稍微放大字級增加美感 */
-      color: rgba(197, 163, 145, 0.18); /* 維持輕薄半透明 */
+      font-family: 'Imperial Script', cursive;
+      font-size: 8.5rem;
+      color: rgba(197, 163, 145, 0.18);
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) rotate(-3deg);
+      /* 移除 rotate，確保完全水平 */
+      transform: translate(-50%, -50%); 
       z-index: 1;
       pointer-events: none;
       white-space: nowrap;
@@ -188,6 +188,7 @@
   <div id="previewOverlay"><img id="previewImage" src=""></div>
 
   <script type="module">
+    // ... JavaScript 部分與前一版本完全相同 ...
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
