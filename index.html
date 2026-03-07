@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Jay & Michelle Wedding Photos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&family=Ballet:opsz@16..72&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&family=Imperial+Script&display=swap" rel="stylesheet">
   <style>
     :root {
       --rose-gold: #c5a391;
@@ -30,12 +30,12 @@
 
     .container { width: 100%; max-width: 400px; }
 
-    /* --- 標題區域設計（Welcome 使用 Ballet 字體） --- */
+    /* --- 標題區域設計（含 Welcome） --- */
     .header-section {
       text-align: center;
       position: relative;
-      margin-bottom: 20px;
-      padding: 15px 0; /* 增加一點點垂直高度，讓 Ballet 的筆畫完整呈現 */
+      margin-bottom: 25px;
+      padding: 15px 0;
     }
 
     h1 {
@@ -44,7 +44,7 @@
       font-size: 2.6rem;
       margin: 0;
       position: relative;
-      z-index: 2; /* 確保主標題在 Welcome 上層 */
+      z-index: 2;
     }
 
     .subtitle {
@@ -54,19 +54,19 @@
       letter-spacing: 3px;
       font-weight: 700;
       position: relative;
-      z-index: 2; /* 確保副標題在 Welcome 上層 */
+      z-index: 2;
     }
 
-    /* 調整為 Ballet 字體、加大字級、保持極細透明感 */
+    /* 換成 Imperial Script：更纖細、更華麗 --- */
     .header-section::after {
       content: "Welcome";
-      font-family: 'Ballet', cursive; /* 切換為 Ballet 字體 */
-      font-size: 8rem; /* Ballet 線條較細，加大至 8rem 維持震撼力 */
-      color: rgba(197, 163, 145, 0.15); /* 稍微降低透明度，保持優雅細緻 */
+      font-family: 'Imperial Script', cursive; /* 切換為指定的 Imperial Script */
+      font-size: 8.5rem; /* 因為線條極細，稍微放大字級增加美感 */
+      color: rgba(197, 163, 145, 0.18); /* 維持輕薄半透明 */
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -55%) rotate(-2deg); /* 微調位置與傾斜度 */
+      transform: translate(-50%, -50%) rotate(-3deg);
       z-index: 1;
       pointer-events: none;
       white-space: nowrap;
@@ -266,6 +266,7 @@
 
     uploadBtn.onclick = async () => {
       if (!selectedFiles.length) { alert("請先選擇照片"); return; }
+      
       uploadBtn.disabled = true;
       progressWrap.style.display = "block";
       progressBar.style.width = "0%";
@@ -279,22 +280,45 @@
           const formData = new FormData();
           formData.append("file", selectedFiles[i]);
           formData.append("upload_preset", UPLOAD_PRESET);
+
           const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
           const data = await res.json();
+
           if (!res.ok) throw new Error(data.error.message || "網路異常");
-          await addDoc(photosCol, { url: data.secure_url, ownerId: currentUser.uid, createdAt: serverTimestamp() });
+
+          await addDoc(photosCol, {
+            url: data.secure_url,
+            ownerId: currentUser.uid,
+            createdAt: serverTimestamp()
+          });
           successCount++;
         } catch (e) {
-          errors.add(e.message);
+          let msg = e.message;
+          if (msg.includes("limit")) msg = "檔案太大";
+          if (msg.includes("fetch")) msg = "網路斷線";
+          errors.add(msg);
         }
         progressBar.style.width = `${((i + 1) / total) * 100}%`;
       }
 
       progressWrap.style.display = "none";
-      uploadStatus.innerHTML = successCount === total ? "✅ 上傳成功！" : `⚠️ 部分上傳失敗: ${Array.from(errors).join("、")}`;
+
+      if (successCount === total) {
+        uploadStatus.innerHTML = "✅ 上傳成功！";
+      } else if (successCount === 0) {
+        uploadStatus.innerHTML = `<span style="color:var(--danger-red)">❌ 上傳失敗，原因為：${Array.from(errors).join("、")}</span>`;
+      } else {
+        uploadStatus.innerHTML = `<span style="color:var(--danger-red)">⚠️ 部分上傳失敗，失敗原因為：${Array.from(errors).join("、")}</span>`;
+      }
+
       selectedFiles = [];
       renderPreviews();
-      setTimeout(() => { uploadBtn.disabled = false; uploadStatus.innerHTML = ""; }, 5000);
+      
+      setTimeout(() => { 
+        uploadBtn.disabled = false; 
+        uploadStatus.innerHTML = "";
+      }, 5000);
+      
       await loadGallery(false);
     };
 
