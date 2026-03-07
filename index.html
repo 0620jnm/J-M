@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Jay & Michelle Wedding Photos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&family=Birthstone+Bounce&display=swap" rel="stylesheet">
   <style>
     :root {
       --rose-gold: #c5a391;
@@ -30,8 +30,47 @@
 
     .container { width: 100%; max-width: 400px; }
 
-    h1 { text-align: center; color: var(--rose-gold); font-family: 'Dancing Script', cursive; font-size: 2.6rem; margin: 0; }
-    .subtitle { text-align: center; font-size: 0.7rem; color: var(--rose-gold); margin-bottom: 20px; letter-spacing: 3px; font-weight: 700; }
+    /* --- 標題區域設計（含 Welcome） --- */
+    .header-section {
+      text-align: center;
+      position: relative; /* 為了讓 Welcome 定位 */
+      margin-bottom: 20px;
+      padding: 10px 0; /* 給 Welcome 一點呼吸空間 */
+    }
+
+    h1 {
+      color: var(--rose-gold);
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.6rem;
+      margin: 0;
+      position: relative; /* 確保主標題在最上層 */
+      z-index: 2;
+    }
+
+    .subtitle {
+      font-size: 0.7rem;
+      color: var(--rose-gold);
+      margin: 0;
+      letter-spacing: 3px;
+      font-weight: 700;
+      position: relative; /* 確保副標題在最上層 */
+      z-index: 2;
+    }
+
+    /* 隨興、草寫、巨大的 Welcome --- */
+    .header-section::after {
+      content: "Welcome";
+      font-family: 'Birthstone Bounce', cursive; /* 充滿隨興感的優雅草寫 */
+      font-size: 6.5rem; /* 夠大 */
+      color: rgba(197, 163, 145, 0.2); /* 玫瑰金的半透明色，輕薄且細 */
+      position: absolute;
+      top: 50%; /* 垂直置中於 header-section */
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-5deg); /* 水平置中、輕微傾斜增加隨興感 */
+      z-index: 1; /* 在文字後面 */
+      pointer-events: none; /* 讓滑鼠點擊穿透 */
+      white-space: nowrap;
+    }
 
     .card {
       background: rgba(255, 255, 255, 0.6);
@@ -115,8 +154,10 @@
 <body>
 
   <div class="container">
-    <h1>Jay & Michelle</h1>
-    <div class="subtitle">WEDDING GALLERY</div>
+    <div class="header-section">
+      <h1>Jay & Michelle</h1>
+      <div class="subtitle">WEDDING GALLERY</div>
+    </div>
 
     <div id="mainUploadSection" class="card">
       <div class="btn-container">
@@ -143,7 +184,7 @@
         <h3 style="text-align: center; color: var(--rose-gold); font-size: 0.85rem;">ALL MEMORIES</h3>
         <div id="fullGallery" class="gallery-full"></div>
         <div class="btn-container">
-            <button id="backBtn">返回</button>
+            <button id="backBtn" class="btn-custom file-label">返回</button>
         </div>
       </div>
       <p id="emptyMsg" style="text-align:center; color:#b5a6a3; display:none; font-size: 12px;">尚無照片</p>
