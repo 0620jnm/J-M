@@ -15,7 +15,6 @@
       --grey-x: #999;
     }
 
-    /* --- 淡入動畫 --- */
     @keyframes smoothFadeIn {
       0% { opacity: 0; transform: translateY(15px); }
       100% { opacity: 1; transform: translateY(0); }
@@ -44,7 +43,6 @@
 
     .container { width: 100%; max-width: 400px; }
 
-    /* --- 標題與 Welcome (保持位置) --- */
     .header-section {
       text-align: center;
       position: relative;
@@ -86,10 +84,7 @@
       transition: transform 0.1s ease; 
     }
 
-    /* 點擊壓感特效 */
-    .btn-custom:active, button:active {
-      transform: scale(0.96);
-    }
+    .btn-custom:active, button:active { transform: scale(0.96); }
 
     #uploadBtn, #viewAllBtn {
       color: white; 
@@ -103,7 +98,6 @@
       border: 1.2px solid var(--rose-gold) !important; 
     }
 
-    /* --- 照片展示區 --- */
     .gallery-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
     .photo-item { border-radius: 8px; overflow: hidden; background: rgba(255,255,255,0.3); transition: transform 0.1s ease; }
     .photo-item:active { transform: scale(0.96); }
@@ -113,7 +107,6 @@
     .photo-buttons button { 
       padding: 3px; font-size: 8px; margin: 0; max-width: 45px; border-radius: 12px; color: white !important; 
     }
-    /* 保持顏色 */
     .btn-save { background: var(--rose-gold) !important; }
     .btn-danger { background: var(--danger-red) !important; }
 
@@ -267,7 +260,15 @@
           const formData = new FormData();
           formData.append("file", selectedFiles[i]);
           formData.append("upload_preset", UPLOAD_PRESET);
-          const res = await fetch(`https://api.api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
+          
+          // 修正網址：從 api.api.cloudinary.com 改回 api.cloudinary.com
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
+          
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error.message || "上傳至雲端失敗");
+          }
+
           const data = await res.json();
           await addDoc(photosCol, {
             url: data.secure_url,
@@ -275,16 +276,26 @@
             createdAt: serverTimestamp()
           });
           successCount++;
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+          console.error("Upload Error:", e);
+          uploadStatus.innerHTML = `<span style="color:var(--danger-red)">❌ 錯誤: ${e.message}</span>`;
+          // 發生錯誤不中斷，繼續嘗試下一個
+        }
         progressBar.style.width = `${((i + 1) / total) * 100}%`;
       }
+
       progressWrap.style.display = "none";
-      uploadStatus.innerHTML = "✅ 上傳成功！";
-      selectedFiles = [];
-      renderPreviews();
+      if (successCount === total) {
+        uploadStatus.innerHTML = "✅ 上傳成功！";
+        selectedFiles = [];
+        renderPreviews();
+      } else if (successCount > 0) {
+        uploadStatus.innerHTML = `⚠️ 部分成功 (${successCount}/${total})`;
+        selectedFiles = [];
+        renderPreviews();
+      }
+
       setTimeout(() => { uploadBtn.disabled = false; uploadStatus.innerHTML = ""; }, 5000);
-      
-      // 上傳成功後，重新呼叫 loadGallery 更新最新照片
       await loadGallery(false);
     };
 
@@ -302,9 +313,8 @@
         snap.forEach((docSnap, index) => {
           const data = docSnap.data();
           const div = document.createElement("div");
-          // 重點：在此加入 fade-in 類別，並根據順序加入微小的延遲讓它更有層次感
           div.className = "photo-item fade-in";
-          div.style.animationDelay = `${index * 0.15}s`;
+          div.style.animationDelay = `${index * 0.1s}s`;
           
           div.innerHTML = `
             <img src="${getDisplayUrl(data.url)}" onclick="showPreview('${data.url.replace('/upload/', '/upload/c_limit,w_900,q_auto,f_auto/')}')">
@@ -315,7 +325,7 @@
           `;
           targetGallery.appendChild(div);
         });
-      } catch (e) { console.error(e); }
+      } catch (e) { console.error("Load Gallery Error:", e); }
     }
 
     window.showPreview = (url) => { document.getElementById("previewImage").src = url; document.getElementById("previewOverlay").style.display = "flex"; };
