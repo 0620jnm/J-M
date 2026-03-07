@@ -57,16 +57,12 @@
     .btn-custom:active, button:active { transform: scale(0.95); }
 
     #uploadBtn, #viewAllBtn { color: white; background: linear-gradient(135deg, #c5a391 0%, #b38d7a 100%); }
-    .file-label, #backBtn { background: white !important; color: var(--rose-gold) !important; border: 1.2px solid var(--rose-gold) !important; }
+    .file-label, .back-btn-ui { background: white !important; color: var(--rose-gold) !important; border: 1.2px solid var(--rose-gold) !important; }
 
-    /* 水平捲動縮圖區 */
     .preview-scroll { 
-      display: flex; gap: 10px; 
-      overflow-x: auto; overflow-y: hidden;
-      white-space: nowrap; 
-      max-height: 0; opacity: 0; width: 100%;
-      transition: all 0.4s ease;
-      scrollbar-width: none;
+      display: flex; gap: 10px; overflow-x: auto; overflow-y: hidden;
+      white-space: nowrap; max-height: 0; opacity: 0; width: 100%;
+      transition: all 0.4s ease; scrollbar-width: none;
     }
     .preview-scroll::-webkit-scrollbar { display: none; }
     .preview-scroll.active { max-height: 110px; opacity: 1; padding: 10px 0; }
@@ -96,10 +92,11 @@
     .progress-bar { width: 0%; height: 100%; background: var(--rose-gold); transition: width 0.2s; }
     .status { font-size: 12px; color: var(--rose-gold); text-align: center; margin: 5px 0; font-weight: 700; min-height: 18px; line-height: 1.4; }
 
+    /* 全覽模式顯示控制 */
     #allPhotosSection { display: none; }
     .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn, .viewing-all #gallery { display: none; }
     .viewing-all #allPhotosSection { display: block; }
-    .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 15px 0; }
     #previewOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 10000; }
     #previewImage { max-width: 95%; max-height: 90%; object-fit: contain; }
   </style>
@@ -130,13 +127,18 @@
       <div class="btn-container">
           <button id="viewAllBtn">瀏覽所有照片</button>
       </div>
+
       <div id="allPhotosSection">
-        <h3 style="text-align: center; color: var(--rose-gold); font-size: 0.85rem;">ALL MEMORIES</h3>
+        <div class="btn-container">
+            <button class="btn-custom back-btn-ui backBtnAction">返回</button>
+        </div>
+        <h3 style="text-align: center; color: var(--rose-gold); font-size: 0.85rem; margin-top: 15px;">ALL MEMORIES</h3>
         <div id="fullGallery" class="gallery-full"></div>
         <div class="btn-container">
-            <button id="backBtn" class="btn-custom file-label">返回</button>
+            <button class="btn-custom back-btn-ui backBtnAction">返回</button>
         </div>
       </div>
+      
       <p id="emptyMsg" style="text-align:center; color:#999; display:none; font-size: 12px; padding: 10px;">尚無照片</p>
     </div>
   </div>
@@ -217,7 +219,7 @@
 
     document.getElementById("uploadBtn").onclick = async () => {
       if (!selectedFiles.length) return;
-      const count = selectedFiles.length; // 紀錄張數
+      const count = selectedFiles.length;
       const btn = document.getElementById("uploadBtn");
       const status = document.getElementById("uploadStatus");
       const bar = document.getElementById("progressBar");
@@ -242,7 +244,6 @@
       }
 
       wrap.style.display = "none";
-      // 成功文字修改
       status.textContent = `成功上傳 ${count} 張照片，謝謝您的分享！`;
       
       selectedFiles = [];
@@ -287,8 +288,20 @@
 
     window.showBig = (url) => { document.getElementById("previewImage").src = url; document.getElementById("previewOverlay").style.display = "flex"; };
     document.getElementById("previewOverlay").onclick = () => document.getElementById("previewOverlay").style.display = "none";
-    document.getElementById("viewAllBtn").onclick = () => { document.body.classList.add("viewing-all"); loadGallery(true); };
-    document.getElementById("backBtn").onclick = () => { document.body.classList.remove("viewing-all"); loadGallery(false); };
+    
+    // 返回功能（頂部與底部共用）
+    document.querySelectorAll(".backBtnAction").forEach(btn => {
+      btn.onclick = () => {
+        document.body.classList.remove("viewing-all");
+        loadGallery(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // 自動捲回頂部
+      };
+    });
+
+    document.getElementById("viewAllBtn").onclick = () => {
+      document.body.classList.add("viewing-all");
+      loadGallery(true);
+    };
   </script>
 </body>
 </html>
