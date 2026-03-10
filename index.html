@@ -4,53 +4,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jay & Michelle Wedding</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;1,400&family=Noto+Serif+TC:wght@300;400&family=Monsieur+La+Doulaise&family=Gwendolyn:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;1,400&family=Noto+Serif+TC:wght@300;400&family=Monsieur+La+Doulaise&display=swap" rel="stylesheet">
 <style>
+    /* --- 核心樣式 --- */
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Noto Serif TC',serif;background:#faf8f5;color:#2c2c2c;overflow-x:hidden}
     
     .cover{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5f5dc,#e8dcc4);text-align:center}
+    .cover h1{font-family:'Playfair Display', serif;font-size:clamp(3rem,10vw,5.5rem);font-weight:300}
+    .cover .amp{color:#c9a96e;font-style:italic}
+    .cover p{margin-top:20px;letter-spacing:0.3em;color:#888}
     
-    /* --- 標題藝術美化 --- */
-    .wedding-title {
-        font-family: 'Playfair Display', serif;
-        display: flex;
-        align-items: baseline;
-        justify-content: center;
-        gap: 15px;
-        margin: 20px 0;
-    }
-    .name-j { font-size: clamp(3.5rem, 12vw, 6rem); font-weight: 300; }
-    .name-m { font-size: clamp(2.8rem, 10vw, 5rem); font-weight: 300; }
-    .amp { 
-        font-family: 'Gwendolyn', cursive; 
-        font-size: 3rem; 
-        color: #c9a96e; 
-        transform: translateY(-5px); /* 讓 & 稍微偏上更有設計感 */
-    }
-
-    .cover p{margin-top:10px;letter-spacing:0.35em;color:#888}
     section{padding:80px 24px;max-width:700px;margin:0 auto;text-align:center}
     h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:#c9a96e;margin-bottom:20px}
     
     .info{background:#fff;padding:30px;margin:20px 0;border:1px solid #e0d9d0; border-radius: 12px;}
-    iframe{width:100%;height:320px;border:none;margin:20px 0; border-radius: 15px; background:#eee;}
+    iframe{width:100%;height:320px;border:none;margin:20px 0; border-radius: 15px; display: block; background:#eee;}
+    input,select{width:100%;padding:12px;margin:8px 0;border:1px solid #e0d9d0;background:#faf8f5; border-radius: 8px;}
     
-    /* 深色按鈕 */
+    /* 深色導航與送出按鈕 */
     .map-btn, .submit-btn {
         display:inline-block; margin-top:15px; padding:12px 30px; 
         background:#362e2b; color:#ffffff; 
         text-decoration:none; letter-spacing:0.2em; border-radius: 25px;
-        transition: background 0.3s; border:none; cursor:pointer;
+        transition: background 0.3s; border:none; cursor:pointer; font-size: 1rem;
     }
-    .map-btn:hover { background: #5d4037; }
+    .map-btn:hover, .submit-btn:hover { background: #5d4037; }
 
-    /* 信封動畫 */
+    /* --- 💎 2. 信封開場 (採用木紋照片背景) --- */
     #envelope-wrapper {
         position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-        background: #2a1f1a; display: flex; align-items: center; justify-content: center;
+        /* 將原本的 gradient 替換為提供的木紋圖片連結 */
+        background-image: url('https://i.imgur.com/k6L0N7v.png'); 
+        background-size: cover; 
+        background-position: center;
+        background-repeat: no-repeat;
+        display: flex; align-items: center; justify-content: center;
         z-index: 10000; transition: opacity 1.2s ease; perspective: 1500px;
     }
+    
     .envelope {
         position: relative; width: 320px; height: 220px; background: #fdfcf8;
         border-radius: 4px; cursor: pointer; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
@@ -63,7 +55,7 @@
     .wax-seal {
         position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%);
         width: 65px; height: 65px; background: #8e1e1e; border-radius: 50%; z-index: 10;
-        display: flex; align-items: center; justify-content: center; transition: 0.5s;
+        box-shadow: 2px 5px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; transition: 0.5s;
     }
     .wax-seal::after { 
         content: "MJ"; font-family: 'Monsieur La Doulaise', cursive; color: rgba(255,255,255,0.4); font-size: 26px;
@@ -71,11 +63,18 @@
     .open .flap { transform: rotateX(180deg); z-index: 1; }
     .open .wax-seal { opacity: 0; transform: translateX(-50%) scale(0.5); }
 
-    /* --- 全文字淡入效果 --- */
-    #main-content { opacity: 0; visibility: hidden; transition: opacity 1s ease; }
+    /*TAP提示文字樣式 */
+    .tap-text {
+        position:absolute; bottom:-50px; left:50%; 
+        transform:translateX(-50%); color:#c9a96e; 
+        letter-spacing:2px; font-size:12px; font-family:sans-serif;
+    }
+
+    /* --- 3. 全文字與元素淡入特效 --- */
+    #main-content { opacity: 0; visibility: hidden; transition: opacity 1.5s ease; }
     #main-content.reveal { opacity: 1; visibility: visible; }
     
-    h1, h2, h3, p, .info, form, iframe, .map-btn, .wedding-title { 
+    h1, h2, h3, p, .info, form, iframe, .map-btn { 
         opacity: 0; transform: translateY(20px); 
         transition: opacity 1s ease-out, transform 1s ease-out; 
     }
@@ -88,20 +87,14 @@
     <div class="envelope" id="env" onclick="startOpen()">
         <div class="flap"></div>
         <div class="wax-seal"></div>
-        <p style="position:absolute; bottom:-50px; left:50%; transform:translateX(-50%); color:#c9a96e; letter-spacing:2px; font-size:12px;">TAP TO OPEN</p>
+        <p class="tap-text">TAP TO OPEN</p>
     </div>
 </div>
 
 <div id="main-content">
     <div class="cover">
-        <p style="font-size:0.85rem;letter-spacing:0.35em;color:#c9a96e;margin-bottom:10px">WE'RE GETTING MARRIED</p>
-        
-        <div class="wedding-title">
-            <span class="name-j">Jay</span>
-            <span class="amp">&</span>
-            <span class="name-m">Michelle</span>
-        </div>
-        
+        <p style="font-size:0.85rem;letter-spacing:0.35em;color:#c9a96e;margin-bottom:18px">WE'RE GETTING MARRIED</p>
+        <h1>Jay <span class="amp">&</span> Michelle</h1>
         <p>2026·06·20</p>
     </div>
 
@@ -109,7 +102,8 @@
         <h2>誠摯邀請您</h2>
         <p style="line-height:2">我們誠摯邀請您，一同見證我們的幸福時刻，分享這份喜悅與愛。<br><br>
         愛情是一段奇妙的旅程，而今天，我們即將啟航人生新的篇章。<br>
-        謝謝你一直以來的支持與陪伴，你的到來將使這個特別的日子更加完美。</p>
+        謝謝你一直以來的支持與陪伴，你的到來將使這個特別的日子更加完美。<br>
+        讓我們一同見證這份美好，共享這份喜悅，期待與你共度這難忘的時刻。</p>
     </section>
 
     <section>
@@ -119,6 +113,10 @@
             <p style="font-size:1.5rem">2026年6月20日</p>
         </div>
         <div class="info">
+            <h3 style="color:#c9a96e;font-size:0.8rem;letter-spacing:0.3em;margin-bottom:10px;">時間</h3>
+            <p>10:00 賓客入場<br>11:00 證婚儀式<br>12:00 準時開席</p>  
+        </div>
+        <div class="info">
             <h3 style="color:#c9a96e;font-size:0.8rem;letter-spacing:0.3em;margin-bottom:10px">地點</h3>
             <p>暖居日穀<br>台中市北屯區松竹路一段3號</p>
         </div>
@@ -126,8 +124,11 @@
 
     <section>
         <h2>婚宴地點</h2>
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3639.467406987157!2d120.7061324!3d24.1729019!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346917865f375555%3A0x6b77c5d5a6c0c6c0!2z5pqW5bGF5pel56穀!5e0!3m2!1szh-TW!2stw!4v170000000000034" allowfullscreen="" loading="lazy"></iframe>
-        <a href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3639.467406987157!2d120.7061324!3d24.1729019!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346917865f375555%3A0x6b77c5d5a6c0c6c0!2z5pqW5bGF5pel56穀!5e0!3m2!1szh-TW!2stw!4v170000000000035" target="_blank" class="map-btn">開啟 Google 地圖</a>
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3639.467406987157!2d120.7061324!3d24.1729019!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346917865f375555%3A0x6b77c5d5a6c0c6c0!2z5pqW5bGF5pel56穀!5e0!3m2!1szh-TW!2stw!4v170000000000036" 
+            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+        <a href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3639.467406987157!2d120.7061324!3d24.1729019!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346917865f375555%3A0x6b77c5d5a6c0c6c0!2z5pqW5bGF5pel56穀!5e0!3m2!1szh-TW!2stw!4v170000000000037" target="_blank" class="map-btn">開啟 Google 地圖</a>
     </section>
 
     <section style="background:#fff;max-width:100%;padding:80px 24px">
@@ -135,9 +136,13 @@
             <h2>出席回覆</h2>
             <form id="rsvpForm" style="margin-top:30px">
                 <input type="text" placeholder="您的姓名" required>
+                <select required>
+                    <option value="">選擇人數</option>
+                    <option>1位</option><option>2位</option><option>3位</option><option>4位</option><option>5位以上</option>
+                </select>
                 <div style="display:flex;gap:10px;margin:10px 0">
-                    <button type="button" style="background:#c9a96e; flex:1; border-radius: 8px; color:white; padding:15px; cursor:pointer; border:none;" onclick="this.style.background='#c9a96e';this.nextElementSibling.style.background='#ccc'">我會出席</button>
-                    <button type="button" style="background:#ccc; flex:1; border-radius: 8px; color:white; padding:15px; cursor:pointer; border:none;" onclick="this.style.background='#c9a96e';this.previousElementSibling.style.background='#ccc'">無法出席</button>
+                    <button type="button" style="background:#c9a96e; flex:1; border-radius: 8px; color:white; border:none; padding:15px; cursor:pointer;" onclick="this.style.background='#c9a96e';this.nextElementSibling.style.background='#ccc'">我會出席</button>
+                    <button type="button" style="background:#ccc; flex:1; border-radius: 8px; color:white; border:none; padding:15px; cursor:pointer;" onclick="this.style.background='#c9a96e';this.previousElementSibling.style.background='#ccc'">無法出席</button>
                 </div>
                 <button type="submit" class="submit-btn" style="width:100%">送出回覆</button>
             </form>
@@ -150,6 +155,10 @@
     </footer>
 </div>
 
+<div id="player" style="position:fixed;top:-9999px;left:-9999px;"></div>
+<button id="musicToggle" style="position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;background:#c9a96e;border:none;color:white;font-size:24px;cursor:pointer;z-index:9999;box-shadow:0 2px 10px rgba(0,0,0,0.3);">▶</button>
+
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
     function startOpen() {
         document.getElementById('env').classList.add('open');
@@ -157,6 +166,7 @@
             document.getElementById('envelope-wrapper').style.opacity = '0';
             document.getElementById('main-content').classList.add('reveal');
             document.body.style.overflow = 'auto';
+            // 進入後立刻手動觸發一次淡入偵測
             handleScroll();
         }, 1500);
         setTimeout(() => {
@@ -165,11 +175,14 @@
     }
 
     function handleScroll() {
-        const selectors = ['h1', 'h2', 'h3', 'p', '.info', 'form', 'iframe', '.map-btn', '.wedding-title'];
-        selectors.forEach(s => {
-            document.querySelectorAll(s).forEach(el => {
+        // 抓取所有需要淡入的標籤
+        const tags = ['h1', 'h2', 'h3', 'p', '.info', 'form', 'iframe', '.map-btn'];
+        tags.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
                 const rect = el.getBoundingClientRect();
-                if (rect.top < window.innerHeight * 0.95) {
+                // 只要元素頂部進入可視範圍 90%
+                if (rect.top < window.innerHeight * 0.9) {
                     el.classList.add('show');
                 }
             });
@@ -177,6 +190,29 @@
     }
 
     window.addEventListener('scroll', handleScroll);
+    document.getElementById('rsvpForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        this.style.display='none';
+        document.getElementById('msg').style.display='block';
+        document.getElementById('msg').classList.add('show');
+    });
+
+    var player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            videoId: 'pmrCXt4lNyA',
+            playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'pmrCXt4lNyA', 'controls': 0 },
+            events: {
+                'onReady': (e) => { e.target.setVolume(30); },
+                'onStateChange': (e) => {
+                    document.getElementById('musicToggle').innerHTML = (e.data == 1) ? '⏸' : '▶';
+                }
+            }
+        });
+    }
+    document.getElementById('musicToggle').addEventListener('click', function() {
+        if (player) player.getPlayerState() == 1 ? player.pauseVideo() : player.playVideo();
+    });
 </script>
 </body>
 </html>
