@@ -1,288 +1,219 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
-  <title>Jay & Michelle Wedding Photos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Dancing+Script:wght@600&family=Imperial+Script&display=swap" rel="stylesheet">
-  <style>
-    :root { --rose-gold: #c5a391; --text-dark: #5a4d4a; --danger-red: #d9534f; }
-    @keyframes smoothFadeIn { 0% { opacity: 0; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
-    .fade-in { opacity: 0; animation: smoothFadeIn 0.8s ease-out forwards; }
-    body { margin: 0; min-height: 100vh; background-color: #fdfbfb; background-image: radial-gradient(at 0% 0%, rgba(245, 227, 224, 0.6) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(247, 231, 206, 0.6) 0px, transparent 50%); background-attachment: fixed; color: var(--text-dark); font-family: 'Noto Serif TC', serif; display: flex; flex-direction: column; align-items: center; padding: 20px 10px; }
-    .container { width: 100%; max-width: 400px; }
-    .header-section { text-align: center; position: relative; margin-bottom: 25px; padding: 15px 0; }
-    h1 { color: var(--rose-gold); font-family: 'Dancing Script', cursive; font-size: 2.6rem; margin: 0; position: relative; z-index: 2; }
-    .subtitle { font-size: 0.7rem; color: var(--rose-gold); margin: 0; letter-spacing: 3px; font-weight: 700; position: relative; z-index: 2; }
-    .header-section::after { content: "Welcome"; font-family: 'Imperial Script', cursive; font-size: 8.5rem; color: rgba(197, 163, 145, 0.18); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; pointer-events: none; }
-    .card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 18px; padding: 14px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 8px 20px rgba(109, 93, 90, 0.04); }
-    .btn-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
-    .btn-custom, button { width: 100%; max-width: 200px; height: 44px; padding: 0 16px; box-sizing: border-box; font-family: 'Noto Serif TC', serif; font-size: 14px; font-weight: 700; border-radius: 22px; cursor: pointer; margin: 6px 0; border: none; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; line-height: 1; }
-    .btn-custom:active, button:active { transform: scale(0.95); }
-    #uploadBtn, #viewAllBtn, #downloadSelectedBtn { color: white; background: linear-gradient(135deg, #c5a391 0%, #b38d7a 100%); }
-    .file-label, .back-btn-ui, .btn-outline { background: white !important; color: var(--rose-gold) !important; border: 1.2px solid var(--rose-gold) !important; }
-    .preview-scroll { display: flex; gap: 10px; overflow-x: auto; overflow-y: hidden; white-space: nowrap; max-height: 0; opacity: 0; width: 100%; transition: all 0.4s ease; scrollbar-width: none; }
-    .preview-scroll.active { max-height: 110px; opacity: 1; padding: 10px 0; }
-    .preview-item { position: relative; display: inline-block; flex-shrink: 0; width: 70px; height: 70px; background: #eee; border-radius: 8px; overflow: hidden; }
-    .preview-thumb { width: 100%; height: 100%; object-fit: cover; }
-    .remove-btn { position: absolute; top: 2px; right: 2px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #000; z-index: 10; }
-    .gallery-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
-    .gallery-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 15px 0; }
-    .photo-item { border-radius: 8px; overflow: hidden; background: #f0f0f0; position: relative; transition: background 0.3s; }
-    .photo-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; transition: all 0.3s ease; }
-    .photo-buttons { display: flex; gap: 4px; padding: 4px; justify-content: center; }
-    .photo-buttons button { padding: 0; height: 24px; font-size: 8px; margin: 0; width: 45px; border-radius: 12px; color: white !important; }
-    .btn-save { background: var(--rose-gold) !important; }
-    .btn-danger { background: var(--danger-red) !important; }
-    #fileInput { display: none; }
-    .progress-wrap { width: 100%; max-width: 200px; height: 5px; background: #eee; border-radius: 10px; margin: 10px 0; display: none; overflow: hidden; }
-    .progress-bar { width: 0%; height: 100%; background: var(--rose-gold); transition: width 0.2s; }
-    .status { font-size: 12px; color: var(--rose-gold); text-align: center; margin: 5px 0; font-weight: 700; min-height: 18px; line-height: 1.4; }
-    #allPhotosSection { display: none; }
-    .viewing-all #mainUploadSection, .viewing-all #previewTitle, .viewing-all #viewAllBtn, .viewing-all #gallery { display: none; }
-    .viewing-all #allPhotosSection { display: block; }
-    #previewOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 10000; }
-    #previewImage { max-width: 95%; max-height: 90%; object-fit: contain; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jay & Michelle Wedding</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;1,400&family=Noto+Serif+TC:wght@300;400&family=Monsieur+La+Doulaise&family=Gwendolyn:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    /* --- 1. 核心樣式 --- */
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Noto Serif TC',serif;background:#faf8f5;color:#2c2c2c;overflow-x:hidden}
     
-    .select-checkbox { position: absolute; top: 10px; left: 10px; width: 22px; height: 22px; accent-color: var(--rose-gold); z-index: 10; display: none; cursor: pointer; }
-    .multi-select-active .select-checkbox { display: block; border: 2px solid #fff; border-radius: 4px; }
-    .photo-item.selected { background-color: var(--rose-gold); }
-    .photo-item.selected img { opacity: 0.35; transform: scale(0.9); }
-    .badge { background: var(--rose-gold); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 5px; }
-  </style>
+    .cover{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5f5dc,#e8dcc4);text-align:center}
+    
+    /* Jay & Michelle 樣式設計 */
+    .names-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.5rem, 8vw, 4.5rem); /* 兩個人名一樣大 */
+        font-weight: 400;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    .amp-gwen {
+        font-family: 'Gwendolyn', cursive;
+        font-size: 0.7em; /* 符號稍微縮小營造藝術感 */
+        color: #c9a96e;
+        font-weight: 700;
+        margin-top: 5px;
+    }
+
+    .cover p{margin-top:20px;letter-spacing:0.3em;color:#888}
+    section{padding:80px 24px;max-width:700px;margin:0 auto;text-align:center}
+    h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:#c9a96e;margin-bottom:20px}
+    
+    /* 圓角與區塊 */
+    .info{background:#fff;padding:30px;margin:20px 0;border:1px solid #e0d9d0; border-radius: 12px;}
+    iframe{width:100%;height:320px;border:none;margin:20px 0; border-radius: 15px; display: block; background:#eee;}
+    input,select{width:100%;padding:12px;margin:8px 0;border:1px solid #e0d9d0;background:#faf8f5; border-radius: 8px;}
+    
+    .map-btn, .submit-btn {
+        display:inline-block; margin-top:15px; padding:12px 30px; 
+        background:#362e2b; color:#ffffff; 
+        text-decoration:none; letter-spacing:0.2em; border-radius: 25px;
+        transition: background 0.3s; border:none; cursor:pointer; font-size: 1rem;
+    }
+    .map-btn:hover, .submit-btn:hover { background: #5d4037; }
+
+    /* --- 2. 信封開場 --- */
+    #envelope-wrapper {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+        background: #2a1f1a; display: flex; align-items: center; justify-content: center;
+        z-index: 10000; transition: opacity 1.2s ease; perspective: 1500px;
+    }
+    .envelope {
+        position: relative; width: 320px; height: 220px; background: #fdfcf8;
+        border-radius: 4px; cursor: pointer; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .flap {
+        position: absolute; top: 0; width: 0; height: 0;
+        border-left: 160px solid transparent; border-right: 160px solid transparent;
+        border-top: 130px solid #f2ede4; transform-origin: top; transition: transform 0.8s ease; z-index: 3;
+    }
+    .wax-seal {
+        position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%);
+        width: 65px; height: 65px; background: #8e1e1e; border-radius: 50%; z-index: 10;
+        box-shadow: 2px 5px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; transition: 0.5s;
+    }
+    .wax-seal::after { 
+        content: "MJ"; font-family: 'Monsieur La Doulaise', cursive; color: rgba(255,255,255,0.4); font-size: 26px;
+    }
+    .open .flap { transform: rotateX(180deg); z-index: 1; }
+    .open .wax-seal { opacity: 0; transform: translateX(-50%) scale(0.5); }
+
+    /* --- 3. 全站淡入特效 --- */
+    #main-content { opacity: 0; visibility: hidden; transition: opacity 1.5s ease; }
+    #main-content.reveal { opacity: 1; visibility: visible; }
+    
+    /* 所有的文字標籤與元件都設定淡入 */
+    h1, h2, h3, p, .info, form, iframe, .map-btn, .names-title { 
+        opacity: 0; transform: translateY(20px); 
+        transition: opacity 1.2s ease-out, transform 1.2s ease-out; 
+    }
+    .show { opacity: 1 !important; transform: translateY(0) !important; }
+</style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="header-section fade-in">
-      <h1>Jay & Michelle</h1>
-      <div class="subtitle">WEDDING GALLERY</div>
+<div id="envelope-wrapper">
+    <div class="envelope" id="env" onclick="startOpen()">
+        <div class="flap"></div>
+        <div class="wax-seal"></div>
+        <p style="position:absolute; bottom:-50px; left:50%; transform:translateX(-50%); color:#c9a96e; letter-spacing:2px; font-size:12px;">TAP TO OPEN</p>
+    </div>
+</div>
+
+<div id="main-content">
+    <div class="cover">
+        <p style="font-size:0.85rem;letter-spacing:0.35em;color:#c9a96e;margin-bottom:18px">WE'RE GETTING MARRIED</p>
+        <div class="names-title">
+            <span>Jay</span>
+            <span class="amp-gwen">&</span>
+            <span>Michelle</span>
+        </div>
+        <p>2026·06·20</p>
     </div>
 
-    <div id="mainUploadSection" class="card fade-in" style="animation-delay: 0.1s;">
-      <div class="btn-container">
-          <label for="fileInput" class="btn-custom file-label">選擇相片</label>
-          <input id="fileInput" type="file" accept="image/*" multiple />
-          <div id="selectionInfo" style="font-size:11px; color:var(--rose-gold); height: 15px;"></div>
-          <div id="previewContainer" class="preview-scroll"></div>
-          <button id="uploadBtn">開始上傳</button>
-          <div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
-          <div id="uploadStatus" class="status"></div>
-      </div>
-    </div>
+    <section>
+        <h2>誠摯邀請您</h2>
+        <p style="line-height:2">我們誠摯邀請您，一同見證我們的幸福時刻，分享這份喜悅與愛。<br><br>
+        愛情是一段奇妙的旅程，而今天，我們即將啟航人生新的篇章。<br>
+        謝謝你一直以來的支持與陪伴，你的到來將使這個特別的日子更加完美。<br>
+        讓我們一同見證這份美好，共享這份喜悅，期待與你共度這難忘的時刻。</p>
+    </section>
 
-    <div class="card fade-in" style="animation-delay: 0.2s;">
-      <h3 id="previewTitle" style="text-align: center; color: var(--rose-gold); font-size: 0.85rem;">LATEST</h3>
-      <div id="gallery" class="gallery-preview"></div>
-      <div class="btn-container">
-          <button id="viewAllBtn">瀏覽所有照片</button>
-      </div>
-
-      <div id="allPhotosSection">
-        <div class="btn-container">
-            <button class="btn-custom back-btn-ui backBtnAction">返回</button>
+    <section>
+        <h2>Wedding Info</h2>
+        <div class="info">
+            <h3 style="color:#c9a96e;font-size:0.8rem;letter-spacing:0.3em;margin-bottom:10px">日期</h3>
+            <p style="font-size:1.5rem">2026年6月20日</p>
         </div>
-        <h3 style="text-align: center; color: var(--rose-gold); font-size: 0.85rem; margin-top: 15px;">
-          ALL MEMORIES <span id="selectCountBadge" class="badge" style="display:none">0</span>
-        </h3>
-        
-        <div class="btn-container" style="flex-direction: row; justify-content: center; gap: 8px;">
-          <button id="toggleSelectBtn" class="btn-custom btn-outline" style="width: 80px;">多選</button>
-          <button id="selectAllBtn" class="btn-custom btn-outline" style="width: 80px; display: none;">全選</button>
-          <button id="downloadSelectedBtn" class="btn-custom" style="width: 80px; display: none;">下載</button>
+        <div class="info">
+            <h3 style="color:#c9a96e;font-size:0.8rem;letter-spacing:0.3em;margin-bottom:10px;">時間</h3>
+            <p>10:00 賓客入場<br>11:00 證婚儀式<br>12:00 準時開席</p>  
         </div>
-
-        <div id="fullGallery" class="gallery-full"></div>
-        <div class="btn-container">
-            <button class="btn-custom back-btn-ui backBtnAction">返回</button>
+        <div class="info">
+            <h3 style="color:#c9a96e;font-size:0.8rem;letter-spacing:0.3em;margin-bottom:10px">地點</h3>
+            <p>暖居日穀<br>台中市北屯區松竹路一段3號</p>
         </div>
-      </div>
-      <p id="emptyMsg" style="text-align:center; color:#999; display:none; font-size: 12px; padding: 10px;">尚無照片</p>
-    </div>
-  </div>
+    </section>
 
-  <div id="previewOverlay"><img id="previewImage" src=""></div>
+    <section>
+        <h2>婚宴地點</h2>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3640.065842857022!2d120.70428587602521!3d24.16931537233379!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346917ef3670989d%3A0xe54e17929424e601!2z5pqW5bGF5pel56穀!5e0!3m2!1szh-TW!2stw!4v1710100000000!5m2!1szh-TW!2stw" allowfullscreen="" loading="lazy"></iframe>
+        <a href="https://maps.app.goo.gl/u3U689W8fXhP3R9u9" target="_blank" class="map-btn">開啟 Google 地圖</a>
+    </section>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    <section style="background:#fff;max-width:100%;padding:80px 24px">
+        <div style="max-width:480px;margin:0 auto">
+            <h2>出席回覆</h2>
+            <form id="rsvpForm" style="margin-top:30px">
+                <input type="text" placeholder="您的姓名" required>
+                <select required>
+                    <option value="">選擇人數</option>
+                    <option>1位</option><option>2位</option><option>3位</option><option>4位</option><option>5位以上</option>
+                </select>
+                <div style="display:flex;gap:10px;margin:10px 0">
+                    <button type="button" style="background:#c9a96e; flex:1; border-radius: 8px; color:white; border:none; padding:15px; cursor:pointer;" onclick="this.style.background='#c9a96e';this.nextElementSibling.style.background='#ccc'">我會出席</button>
+                    <button type="button" style="background:#ccc; flex:1; border-radius: 8px; color:white; border:none; padding:15px; cursor:pointer;" onclick="this.style.background='#c9a96e';this.previousElementSibling.style.background='#ccc'">無法出席</button>
+                </div>
+                <button type="submit" class="submit-btn" style="width:100%">送出回覆</button>
+            </form>
+            <p id="msg" style="display:none;margin-top:20px;color:#c9a96e;font-size:1.2rem">感謝您的回覆！</p>
+        </div>
+    </section>
 
-    const config = { apiKey: "AIzaSyAUFF7GdX7fAtK_wK5-YAffirtap52UgCg", authDomain: "wedding-e6351.firebaseapp.com", projectId: "wedding-e6351", storageBucket: "wedding-e6351.firebasestorage.app", messagingSenderId: "382633819825", appId: "1:382633819825:web:b1dd463dd466752f78ec90" };
-    const app = initializeApp(config), db = getFirestore(app), auth = getAuth(app), photosCol = collection(db, "wedding_photos");
+    <footer style="text-align:center;padding:60px 24px;font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-style:italic;color:#c9a96e">
+        See You Soon
+    </footer>
+</div>
 
-    let currentUser = null, selectedFiles = [], isMultiSelectMode = false;
+<div id="player" style="position:fixed;top:-9999px;left:-9999px;"></div>
+<button id="musicToggle" style="position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;background:#c9a96e;border:none;color:white;font-size:24px;cursor:pointer;z-index:9999;box-shadow:0 2px 10px rgba(0,0,0,0.3);">▶</button>
 
-    onAuthStateChanged(auth, async (u) => { if (u) { currentUser = u; loadGallery(false); } else { signInAnonymously(auth); } });
-
-    document.getElementById("fileInput").onchange = (e) => {
-      const files = Array.from(e.target.files);
-      if (files.length > 0) document.getElementById("previewContainer").classList.add('active');
-      files.forEach(file => { selectedFiles.push(file); createCompressedPreview(file); });
-      document.getElementById("selectionInfo").textContent = `已選取 ${selectedFiles.length} 張`;
-      e.target.value = "";
-    };
-
-    function createCompressedPreview(file) {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX = 120; let w = img.width, h = img.height;
-          if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          const div = document.createElement("div");
-          div.className = "preview-item fade-in";
-          div.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.6)}" class="preview-thumb"><div class="remove-btn" onclick="removeFile(this)">✕</div>`;
-          document.getElementById("previewContainer").appendChild(div);
-        };
-        img.src = ev.target.result;
-      };
-      reader.readAsDataURL(file);
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+    function startOpen() {
+        document.getElementById('env').classList.add('open');
+        setTimeout(() => {
+            document.getElementById('envelope-wrapper').style.opacity = '0';
+            document.getElementById('main-content').classList.add('reveal');
+            document.body.style.overflow = 'auto';
+            handleScroll();
+        }, 1500);
+        setTimeout(() => {
+            document.getElementById('envelope-wrapper').style.display = 'none';
+        }, 2700);
     }
 
-    window.removeFile = (btn) => {
-      const item = btn.parentElement, container = item.parentElement;
-      const index = Array.from(container.children).indexOf(item);
-      selectedFiles.splice(index, 1); item.remove();
-      if (selectedFiles.length === 0) container.classList.remove('active');
-      document.getElementById("selectionInfo").textContent = selectedFiles.length > 0 ? `已選取 ${selectedFiles.length} 張` : "";
-    };
-
-    document.getElementById("uploadBtn").onclick = async () => {
-      if (!selectedFiles.length) return;
-      const btn = document.getElementById("uploadBtn"), status = document.getElementById("uploadStatus");
-      const bar = document.getElementById("progressBar"), wrap = document.getElementById("progressWrap");
-      btn.disabled = true; wrap.style.display = "block";
-      let count = 0;
-      for (let i = 0; i < selectedFiles.length; i++) {
-        status.textContent = `上傳中 (${i+1}/${selectedFiles.length})...`;
-        try {
-          const fd = new FormData();
-          fd.append("file", selectedFiles[i]);
-          fd.append("upload_preset", "wedding-photos");
-          const res = await fetch(`https://api.cloudinary.com/v1_1/dfcbhdvq8/upload`, { method: "POST", body: fd });
-          const data = await res.json();
-          if (data.secure_url) {
-            await addDoc(photosCol, { url: data.secure_url, ownerId: currentUser.uid, createdAt: serverTimestamp() });
-            count++;
-          }
-        } catch (e) { console.error(e); }
-        bar.style.width = `${((i+1)/selectedFiles.length)*100}%`;
-      }
-      wrap.style.display = "none"; status.textContent = `成功上傳 ${count} 張照片！`;
-      selectedFiles = []; document.getElementById("previewContainer").innerHTML = "";
-      document.getElementById("previewContainer").classList.remove('active');
-      document.getElementById("selectionInfo").textContent = "";
-      setTimeout(() => { status.textContent = ""; btn.disabled = false; }, 4000);
-      loadGallery(false);
-    };
-
-    async function loadGallery(isFull = false) {
-      const target = isFull ? document.getElementById("fullGallery") : document.getElementById("gallery");
-      target.innerHTML = "";
-      try {
-        const q = isFull ? query(photosCol, orderBy("createdAt", "desc")) : query(photosCol, orderBy("createdAt", "desc"), limit(3));
-        const snap = await getDocs(q);
-        if (snap.empty) { document.getElementById("emptyMsg").style.display = "block"; return; }
-        document.getElementById("emptyMsg").style.display = "none";
-        snap.forEach((d, i) => {
-          const data = d.data();
-          const div = document.createElement("div");
-          div.className = "photo-item fade-in";
-          div.style.animationDelay = `${i * 0.05}s`;
-          div.innerHTML = `
-            <input type="checkbox" class="select-checkbox" data-url="${data.url}">
-            <img src="${data.url.replace('/upload/', '/upload/c_fill,h_600,w_600,q_auto,f_auto/')}" onclick="handlePhotoClick(this, '${data.url}')">
-            <div class="photo-buttons">
-              <button class="btn-save" onclick="directDownload('${data.url}', 'wedding_${i}.jpg')">保存</button>
-              ${currentUser && data.ownerId === currentUser.uid ? `<button class="btn-danger" onclick="deletePhoto('${d.id}')">刪除</button>` : ''}
-            </div>`;
-          target.appendChild(div);
+    function handleScroll() {
+        const selectors = ['h1', 'h2', 'h3', 'p', '.info', 'form', 'iframe', '.map-btn', '.names-title'];
+        selectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.9) {
+                    el.classList.add('show');
+                }
+            });
         });
-      } catch (e) { console.error(e); }
     }
 
-    // --- 新增：強制直接下載不開新頁的函數 ---
-    window.directDownload = async (url, filename) => {
-      try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const blobUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(blobUrl);
-        document.body.removeChild(a);
-      } catch (e) {
-        window.open(url, '_blank'); // 如果失敗才退回開新頁
-      }
-    };
+    window.addEventListener('scroll', handleScroll);
+    document.getElementById('rsvpForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        this.style.display='none';
+        document.getElementById('msg').style.display='block';
+        document.getElementById('msg').classList.add('show');
+    });
 
-    window.handlePhotoClick = (img, url) => {
-      if (isMultiSelectMode) {
-        const cb = img.previousElementSibling;
-        const item = img.parentElement;
-        cb.checked = !cb.checked;
-        item.classList.toggle('selected', cb.checked);
-        updateBadge();
-      } else { showBig(url); }
-    };
-
-    function updateBadge() {
-      const count = document.querySelectorAll('.select-checkbox:checked').length;
-      const b = document.getElementById("selectCountBadge");
-      b.textContent = count; b.style.display = count > 0 ? "inline" : "none";
+    var player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            videoId: 'pmrCXt4lNyA',
+            playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'pmrCXt4lNyA', 'controls': 0 },
+            events: {
+                'onReady': (e) => { e.target.setVolume(30); },
+                'onStateChange': (e) => {
+                    document.getElementById('musicToggle').innerHTML = (e.data == 1) ? '⏸' : '▶';
+                }
+            }
+        });
     }
-
-    document.getElementById("toggleSelectBtn").onclick = function() {
-      isMultiSelectMode = !isMultiSelectMode;
-      const gallery = document.getElementById("fullGallery");
-      const down = document.getElementById("downloadSelectedBtn"), all = document.getElementById("selectAllBtn");
-      if (isMultiSelectMode) {
-        this.textContent = "取消"; gallery.classList.add("multi-select-active");
-        down.style.display = all.style.display = "flex";
-      } else {
-        this.textContent = "多選"; gallery.classList.remove("multi-select-active");
-        down.style.display = all.style.display = "none";
-        document.getElementById("selectCountBadge").style.display = "none";
-        document.querySelectorAll('.photo-item').forEach(i => { i.classList.remove('selected'); i.querySelector('.select-checkbox').checked = false; });
-      }
-    };
-
-    document.getElementById("selectAllBtn").onclick = () => {
-      const items = document.querySelectorAll('.photo-item');
-      const allChecked = Array.from(items).every(i => i.querySelector('.select-checkbox').checked);
-      items.forEach(i => { const cb = i.querySelector('.select-checkbox'); cb.checked = !allChecked; i.classList.toggle('selected', cb.checked); });
-      document.getElementById("selectAllBtn").textContent = allChecked ? "全選" : "取消全選";
-      updateBadge();
-    };
-
-    document.getElementById("downloadSelectedBtn").onclick = async function() {
-      const selected = document.querySelectorAll('.select-checkbox:checked');
-      if (!selected.length) return alert("請選取照片");
-      const btn = this;
-      btn.textContent = "準備中"; btn.disabled = true;
-      
-      for (let i = 0; i < selected.length; i++) {
-        const url = selected[i].getAttribute('data-url');
-        await directDownload(url, `wedding_batch_${i}.jpg`);
-        // 稍微延遲一下，讓瀏覽器反應得過來
-        await new Promise(r => setTimeout(r, 400));
-      }
-      
-      btn.textContent = "下載"; btn.disabled = false;
-    };
-
-    window.deletePhoto = async (id) => { if (confirm("刪除照片？")) { await deleteDoc(doc(db, "wedding_photos", id)); loadGallery(true); } };
-    window.showBig = (u) => { document.getElementById("previewImage").src = u; document.getElementById("previewOverlay").style.display = "flex"; };
-    document.getElementById("previewOverlay").onclick = () => document.getElementById("previewOverlay").style.display = "none";
-    document.querySelectorAll(".backBtnAction").forEach(b => { b.onclick = () => { document.body.classList.remove("viewing-all"); isMultiSelectMode = false; loadGallery(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }; });
-    document.getElementById("viewAllBtn").onclick = () => { document.body.classList.add("viewing-all"); loadGallery(true); };
-  </script>
+    document.getElementById('musicToggle').addEventListener('click', function() {
+        if (player) player.getPlayerState() == 1 ? player.pauseVideo() : player.playVideo();
+    });
+</script>
 </body>
 </html>
